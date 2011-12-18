@@ -1,0 +1,52 @@
+{% extends "base_glukokortikoidy.html" %}
+
+{% block title %}
+    {{ block.super }} Vlozit hodnoty
+{% endblock %}
+
+{% block content %}
+    <h2>Glukokortikoidy - vysledek</h2>
+    <p />
+
+    <div class="row">
+      <div class="span4">
+        <table class="bordered-table zebra-striped">
+          <tbody>
+            <tr>
+              <th>Metylprednisolon</th>
+              <td>{{ data.metylprednisolon|floatformat:"-2" }}</td>
+            </tr>
+            <tr>
+              <th>Hydrocortison</th>
+              <td>{{ data.hydrocortison|floatformat:"-2" }}</td>
+            </tr>
+            <tr>
+              <th>Dexamethason</th>
+              <td>{{ data.dexamethason|floatformat:"-2" }}</td>
+            </tr>
+            <tr>
+              <th>Prednison</th>
+              <td>{{ data.prednison|floatformat:"-2" }}</td>
+            </tr>
+            <tr>
+              <th>Prednisolon</th>
+              <td>{{ data.prednisolon|floatformat:"-2" }}</td>
+            </tr>
+            <tr>
+              <th>Cortison</th>
+              <td>{{ data.cortison|floatformat:"-2" }}</td>
+            </tr>
+            <tr>
+              <th>Betamethason</th>
+              <td>{{ data.betamethason|floatformat:"-2" }}</td>
+            </tr>
+            <tr>
+              <th>Triamcinolon</th>
+              <td>{{ data.triamcinolon|floatformat:"-2" }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+{% endblock %}

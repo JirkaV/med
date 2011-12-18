@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Medical Apps {% block title %}Title{% endblock %}</title>
+
+    <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+{% comment %}
+    <div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <a class="brand" href="#">Glukokortikoidy</a>
+          <ul class="nav">
+            <li><a href="#">Home</a></li>
+            {% block top_navigation %}
+            {% endblock %}
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <ul class="breadcrumb">
+      {% block breadcrumbs %}
+      FIXME - remove
+      <li><a href="#">FIXME</a> <span class="divider">/</span></li>
+      <li><a href="#">Middle page</a> <span class="divider">/</span></li>
+      <li><a href="#">Another one</a> <span class="divider">/</span></li>
+      <li class="active">You are here</li>
+      {% endblock %}
+    </ul>
+{% endcomment %}
+
+    <div class="container">
+
+      <div class="hero-unit">
+        {% block content %}
+          Main content belongs here 
+        {% endblock %}
+      </div>
+
+    </div>
+
+  </body>
+</html>

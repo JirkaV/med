@@ -1,0 +1,31 @@
+{% extends "base_dna.html" %}
+{% load dna %}
+
+{% block head %}
+.nobullet { list-style-type:none }
+{% endblock %}
+
+{% block title %}
+    {{ block.super }} DNA Matching Result
+{% endblock %}
+
+{% block content %}
+    <h2>DNA Matching Result against {{ reference }}</h2>
+    
+    <div class="changes">
+    <h3>Changes Between Reference DNA and Sample</h3>
+      {% for junk, idx, ref, sample in changes %}
+        <ul class="nobullet">
+          <li>{{ idx }}: {% highlight_changes ref sample %}
+        </ul> 
+      {% endfor %}
+    </div>
+    <p />
+    <div class="dna_printout">
+    <h3>Complete Comparison Printout</h3>
+      {% for diff in diffs %}
+        <pre>{{ diff }}</pre>
+      {% endfor %}
+    </div>
+
+{% endblock %}

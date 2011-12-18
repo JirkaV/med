@@ -1,0 +1,31 @@
+{% extends "base_glukokortikoidy.html" %}
+
+{% block title %}
+    {{ block.super }} Vlozit hodnoty
+{% endblock %}
+
+{% block content %}
+    <h2>Glukokortikoity (mg)</h2>
+    <p />
+
+    <form action="{% url glukokortikoidy_calculator %}" method="post">{% csrf_token %}
+      {% for error in form.non_field_errors %}
+        <div class="alert-message error span8">
+            {{ error }}
+        </div>
+      {% endfor %}
+
+      {% for field in form %}
+        <div class="clearfix{% if field.errors %} error{% endif %}">
+          <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+          <div class="input">
+             {{ field }}
+             {% if field.errors %}{% for error in field.errors %}<span class="help-inline">{{ error }}</span>{% endfor %}{% endif %}
+          </div> 
+          </label>
+        </div>
+      {% endfor %}
+      <input type="submit" class="btn primary" value="Přepočítat" />
+    </form>
+
+{% endblock %}
