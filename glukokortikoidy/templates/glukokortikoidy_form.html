@@ -5,27 +5,35 @@
 {% endblock %}
 
 {% block content %}
+
     <h2>Glukokortikoity (mg)</h2>
     <p />
 
+    <script type="text/javascript">
+    function my_callback(data){
+        alert(data+' received from server');
+    }
+    
+    </script>
     <form action="{% url glukokortikoidy_calculator %}" method="post">{% csrf_token %}
       {% for error in form.non_field_errors %}
         <div class="alert-message error span8">
             {{ error }}
         </div>
       {% endfor %}
-
+      
       {% for field in form %}
-        <div class="clearfix{% if field.errors %} error{% endif %}">
+        <div class="clearfix{% if field.errors %} error{% endif %}" id="field_{{ field.name }}">
           <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
           <div class="input">
-             {{ field }}
+             <input type="text" name="{{ field.name }}" id="{{ field.name }}" onkeyup="Dajaxice.glukokortikoidy.recalculate(Dajax.process,{'field':this.id, 'value':this.value});" />
+             <span class="help-inline" id="err_{{ field.name }}" ></span>
              {% if field.errors %}{% for error in field.errors %}<span class="help-inline">{{ error }}</span>{% endfor %}{% endif %}
           </div> 
           </label>
         </div>
       {% endfor %}
-      <input type="submit" class="btn primary" value="Přepočítat" />
+      
     </form>
 
 {% endblock %}
