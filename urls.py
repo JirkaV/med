@@ -1,5 +1,8 @@
 from django.conf import settings
 from django.conf.urls.defaults import *
+from dajaxice.core import dajaxice_autodiscover
+
+dajaxice_autodiscover()
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -11,6 +14,10 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
+)
+
+urlpatterns += patterns('',
+    url(r'^%s/' % settings.DAJAXICE_MEDIA_PREFIX, include('dajaxice.urls'))
 )
 
 if settings.DEBUG:

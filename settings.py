@@ -63,7 +63,7 @@ SECRET_KEY = 's%mp1e)ut7pa26n3pdu6yr7utgl%p+n@cc(6$4*l3ve2+4f=zt'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -97,8 +97,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
+    'dajaxice',
+    'dajax',
     'dna',
     'glukokortikoidy',
 )
+
+DAJAXICE_MEDIA_PREFIX = 'static/dajaxice'
