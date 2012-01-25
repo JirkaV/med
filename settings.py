@@ -2,7 +2,7 @@
 
 import os
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -104,4 +104,4 @@ INSTALLED_APPS = (
     'glukokortikoidy',
 )
 
-DAJAXICE_MEDIA_PREFIX = 'static/dajaxice'
+DAJAXICE_MEDIA_PREFIX = 'dajaxice'
