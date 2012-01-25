@@ -12,5 +12,5 @@ class ReferenceDNA(models.Model):
 
 # fill the database with initial data
 
-ReferenceDNA.objects.get_or_create(name='UL54', dna=UL54_REFERENCE)
-ReferenceDNA.objects.get_or_create(name='UL97', dna=UL97_REFERENCE)
+#ReferenceDNA.objects.get_or_create(name='UL54', dna=UL54_REFERENCE)
+#ReferenceDNA.objects.get_or_create(name='UL97', dna=UL97_REFERENCE)
