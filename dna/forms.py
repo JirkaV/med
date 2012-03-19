@@ -1,8 +1,9 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from models import ReferenceDNA
+from dna_values import DNA_ELEMENTS, VARIANTS
 
-DNA_ELEMENTS = ('A', 'C', 'G', 'T')
+VALID = DNA_ELEMENTS + VARIANTS.keys()
 
 class DNAField(forms.Field):
     '''custom class handling multiple IP addresses'''
@@ -12,7 +13,7 @@ class DNAField(forms.Field):
         errors = []
         value = value.strip().upper()
         for element in value:
-            if element not in DNA_ELEMENTS:
+            if element not in VALID:
                 errors.append('Invalid DNA - contains "%s"' % element)
                 break
         if errors:

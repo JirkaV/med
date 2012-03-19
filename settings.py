@@ -2,7 +2,11 @@
 
 import os
 
-DEBUG = False
+try:
+    from local_settings import DEBUG
+except ImportError:
+    DEBUG = False
+
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (

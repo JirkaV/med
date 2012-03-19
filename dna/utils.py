@@ -1,7 +1,6 @@
 from difflib import SequenceMatcher
-from random import choice
+from dna_values import VARIANTS
 
-DNA_TOKENS = ('A', 'G', 'C', 'K')
 FILL_CHAR = ' '  # added to sample on left and right to match reference length
 DIFF_CHAR = '*'  # display where sample is different from reference
 SAME_CHAR = ' '  # display where sample matches reference
@@ -25,14 +24,6 @@ UL54B_PRIMER_5_REVERSED = 'TAGCCGAAGATCCGAGCTACG'
 
 #UL54B = 'TCGGCTCCGGCAGTAGTGGCGGCGTCGGCGTTTCCAACGACAGTCACGGCGCCGGCGGTACTGCGGCGGTTTCGTACCAGGGTGCCACGGTGTTTGAGCCCGAGGTGGGTTATTACAACGACCCCGTGGCCGTGTTCGACTTTGCCAGCCTCTATCCTTCCATCATCATGGCTCACAACCTCTGCTACTCCACCCTGCTGGTGCCGGGTGGCGAGTACCCCGTGGACCCcGCCGATGTATACAGCGTCACGCTAGAGAACGGCGTGACTCACCGCTTTGTGCGTGCTTCGGTGCGCGTCTCGGTGCTTTCGGAACTGCTCAACAAGTGGGTTTCGCAGCGCCGTGCCGTGCGCGAATGCATGCGCGAGTGTCAAGACCCcGTGCGCCGTATGCTGCTCGACAAGGAACAGATGGCACTCAAAGTAACGTGTAACGCTTTCTACGGTTTTACCGGCGTGGTCAACGGCATGATGCCGTGTCTGCCCATCGCCGCCAGCATCACGCGCATCGGTCGCGACATGCTAGAGCGCACGGCGCGGTTCATCAAAGACAACTTTTC'.upper()
 UL54B = 'TCGGCTCCGGCAGTAGTGGCGGCGTCGGCGTTTCCAACGACAGTCACGGCGCCGGCGGTACTGCGGCGGTTTCGTACCAGGGTGCCACGGTGTTTGAGCCCGAGGTGGGTTATTACAACGACCCCGTGGCCGTGTTCGACTTTGCCAGCCTCTATCCTTCCATCATCATGGCTCACAACCTCTGCTACTCCACCCTGCTGGTGCCGGGTGGCGAGTACCCCGTGGACCCcGCCGATGTATACAGCGTCACGCTAGAGAACGGCGTGACTCACCGCTTTGTGCGTGCTTCGGTGCGCGTCTCGGTGCTTTCGGAACTGCTCAACAAGTGGGTTTCGCAGCGCCGTGCCGTGCGCGAATGCATGCGCGAGTGTCAAGACCCcGTGCGCCGTATGCTGCTCGACAAGGAACAGATGGCACTCAAAGTAACGTGTAACGCTTTCTACGGTTTTACCGGCGTGGTCAACGGCATGATGCCGTGTCTGCCCATCGCCGCCAGCATCACGCGCATCGGTCGCGACATGCTAGAGCGCACGGCGCGGTTCATCAAAGACAACTTTTC'.upper()
-
-
-# def random_dna(length):
-#     res = []
-#     while length:
-#         res.append(choice(DNA_TOKENS))
-#         length -= 1
-#     return ''.join(res)
 
 def get_sequence_between_primers(sequence, start_primer, end_primer):
     '''returns sequence of DNA between primers (including the primers)
@@ -66,24 +57,54 @@ def _count_matches(reference, sample_, offset_):
 #    print offset_, matches
     return matches
 
-def get_best_offset(reference, sample):
-    '''returns best offset for sample so it best matches reference
-    (has least number of differences
+def get_variants(sample):
+    '''given DNA sample, returns all possible DNA variants (in a list)
+    based on non-exact values in the DNA sample
     '''
-    len_diff = len(reference) - len(sample)
-    assert len_diff >= 0, '[!] Sample is longer than reference!'
-    offset = 0
-    best_offset, best_matches = 0, 0
-    while offset < len_diff:
-        m = _count_matches(reference, sample, offset)
-#        print offset, m
-        if m > best_matches:
-            best_matches = m
-            best_offset = offset
-        offset += 1
-    if not best_matches:  # nothing good found
-        return None
-    return best_offset
+    # this is a naive implementation, not optimized at all
+    res = []
+    length = len(sample)
+    tmp = [ (0, sample) ]
+    variants = VARIANTS.keys()
+    i = 0
+    while tmp:
+        i, data = tmp.pop(0)
+        while i < length:
+            curr = data[i]
+            if curr not in variants:
+                i += 1
+                continue
+            for char in VARIANTS[curr]:
+                option = '%s%s%s' % (data[:i], char, data[i+1:])
+                tmp.append( (i+1, option) )
+            break
+        if i == length:
+            res.append(data)
+    return res
+
+def get_best_offset(reference, sample):
+    '''returns best offset so it best matches reference
+    (has least number of differences. Returns offset and the best sample used
+    (in case it has variants)
+    '''
+    most_matches_overall, best_offset_overall = 0, 0 
+    best_sample = None
+    for sample in get_variants(sample):
+        len_diff = len(reference) - len(sample)
+        assert len_diff >= 0, '[!] Sample is longer than reference!'
+        offset = 0
+        best_offset, most_sample_matches = 0, 0
+        while offset < len_diff:
+            m = _count_matches(reference, sample, offset)
+            if m > most_sample_matches:
+                most_sample_matches = m
+                best_offset = offset
+            offset += 1
+        if most_sample_matches > most_matches_overall:
+            most_matches_overall = most_sample_matches
+            best_sample = sample
+            best_offset_overall = best_offset
+    return best_sample, best_offset_overall
 
 def _fill_to_len(reference_, sample_, sample_offset_):
     '''left- and right-fills sample with spaces so len(sample) == len(reference)
@@ -138,7 +159,6 @@ def get_diffs(reference, sample, sample_offset, width=80,
 def display_diffs(*args, **kwargs):
     '''provides visual representation of DNA differences'''
     diffs = get_diffs(*args, **kwargs)
-    i = 0
     for diff in diffs:
         print diff
 
@@ -194,6 +214,6 @@ if __name__ == '__main__':
     matching_offset = get_best_offset(block_to_match, UL54B)
     display_diffs(block_to_match, UL54B, matching_offset)
 
-    for x in get_triplets(block_to_match, UL54B, matching_offset, 
+    for triplet in get_triplets(block_to_match, UL54B, matching_offset, 
                           different_only=True):
-        print x
+        print triplet
