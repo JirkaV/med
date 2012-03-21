@@ -109,3 +109,6 @@ INSTALLED_APPS = (
 )
 
 DAJAXICE_MEDIA_PREFIX = 'dajaxice'
+
+# import local settings such as FORCE_SCRIPT_NAME
+from local_settings import *

@@ -57,6 +57,9 @@ def _count_matches(reference, sample_, offset_):
 #    print offset_, matches
     return matches
 
+## this is a poor solution. I actually coded a much better one,
+## but lost it when my laptop HDD died. I'll eventually code it again
+## (variants were not pre-created, but accounted for in _count_matches()
 def get_variants(sample):
     '''given DNA sample, returns all possible DNA variants (in a list)
     based on non-exact values in the DNA sample
