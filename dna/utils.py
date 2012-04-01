@@ -4,6 +4,7 @@ from dna_values import VARIANTS
 FILL_CHAR = ' '  # added to sample on left and right to match reference length
 DIFF_CHAR = '*'  # display where sample is different from reference
 SAME_CHAR = ' '  # display where sample matches reference
+VARIANT_CHAR = ':'  # display where sample matches reference, but was a variant match
 
 UL97_REFERENCE = 'ATGTCCTCCGCACTTCGGTCTCGGGCTCGCTCGGCCTCGCTCGGAACGACGACTCAGGGCTGGGATCCGCCGCCATTGCGTCGTCCCAGCAGGGCGCGCCGGCGCCAGTGGATGCGCGAAGCTGCGCAGGCCGCCGCTCAAGCCGCGGTACAGGCCGCGCAGGCCGCCGCCGCTCAAGTTGCCCAGGCTCACGTCGATGAAGACGAGGTCGTGGATCTGATGACCGACGAGGCCGGCGGCGGCGTCACCACTTTGACCACCCTGAGTTCCGTCAGCACAACCACCGTGCTTGGACACGCGACTTTTTCCGCATGCGTTCGAAGTGACGTGATGCGTGACGGAGAAAAAGAGGACGCGGCTTCGGACAAGGAGAACCAGCGTCGGCCCGTGGTGCCGTCCACGTCGTCTCGCGGCAGCGCCGCCAGCGGCGACGGTTACCACGGCTTGCGCTGCCGCGAAACCTCGGCCATGTGGTCGTTCGAGTACGATCGCGACGGCGACGTGACCAGCGTACGCCGCGCTCTCTTCACCGGCGGCAGCGACCCCTCGGACAGCGTGAGCGGCGTCCGCGGTGGACGCAAACGCCCGTTGCGTCCGCCGTTGGTGTCGCTGGCCCGCACCCCGCTGTGCCGACGTCGTGTGGGCGGCGTGGACGCGGTGCTCGAAGAAAACGACGTGGAGCTGCGCGCGGAAAGTCAGGACAGCGCCGTGGCATCGGGCCCGGGCCGCGTTCCGCAGCCGCTCAGCGGTAGTTCCGGGGAGGAATCCGCCACGGCGGTGGAGGCCGACTCCACGTCACACGACGACGTGCATTGCACCTGTTCCAACGACCAGATCATCACCACGTCCATCCGCGGCCTTACGTGCGACCCGCGTATGTTCTTGCGCCTTACGCATCCCGAGCTCTGCGAGCTCTCTATCTCCTACCTGCTGGTCTACGTGCCCAAAGAGGACGATTTTTGCCACAAGATCTGTTATGCCGTGGACATGAGCGACGAGAGCTACCGCCTGGGCCAGGGCTCCTTCGGCGAGGTCTGGCCGCTCGATCGCTATCGCGTGGTCAAGGTGGCGCGTAAGCACAGCGAGACGGTGCTCACGGTCTGGATGTCGGGCCTGATCCGCACGCGCGCCGCTGGCGAGCAACAGCAGCCGCCGTCGCTGGTGGGCACGGGCGTGCACCGCGGTCTGCTCACGGCCACGGGCTGCTGTCTGCTGCACAACGTCACGGTACATCGACGTTTCCACACAGACATGTTTCATCACGACCAGTGGAAGCTGGCGTGCATCGACAGCTACCGACGTGCCTTTTGCACGTTGGCCGACGCTATCAAATTTCTCAATCACCAGTGTCGTGTATGCCACTTTGATATTACACCCATGAACGTGCTCATCGACGTGAACCCGCACAACCCCAGCGAGATCGTGCGCGCCGCGCTGTGCGATTACAGCCTCAGCGAGCCCTATCCGGATTACAACGAGCGCTGTGTGGCCGTCTTTCAGGAGACGGGCACGGCGCGCCGCATCCCCAACTGCTCGCACCGTCTGCGCGAATGTTACCACCCTGCTTTCCGACCCATGCCGCTGCAGAAGCTGCTCATCTGCGACCCGCACGCGCGTTTCCCCGTAGCCGGCCTACGGCGTTATTGCATGTCGGAGTTGTCGGCGCTGGGTAACGTGCTGGGCTTTTGCCTCATGCGGCTGTTGGACCGGCGCGGTCTGGACGAGGTGCGCATGGGTACGGAGGCGTTGCTCTTTAAGCACGCCGGCGCGGCCTGCCGCGCGTTGGAGAACGGCAAGCTCACGCACTGCTCCGACGCCTGTCTGCTCATTCTGGCGGCGCAAATGAGCTACGGCGCCTGTCTCCTGGGCGAGCATGGCGCCGCGCTGGTGTCGCACACGCTACGCTTTGTGGAGGCCAAGATGTCCTCGTGTCGCGTACGCGCCTTTCGCCGCTTCTACCACGAATGCTCGCAGACCATGCTGCACGAATACGTCAGAAAGAACGTGGAGCGTCTGTTGGCCACGAGCGACGGGCTGTATTTATATAACGCCTTTCGGCGCACCACCAGCATAATCTGCGAGGAGGACCTTGACGGTGACTGCCGTCAACTGTTCCCCGAGTAA'
 UL97_PRIMER_3 = 'TCATCACGACCAGTGGAAGCT'
@@ -52,62 +53,26 @@ def _count_matches(reference, sample_, offset_):
     s = sample_
     matches = 0
     for x in range(len(s)):
-        if r[x] == s[x]:
+        if r[x] == s[x] or (VARIANTS.has_key(s[x]) and r[x] in VARIANTS[s[x]]):
             matches += 1
-#    print offset_, matches
     return matches
-
-## this is a poor solution. I actually coded a much better one,
-## but lost it when my laptop HDD died. I'll eventually code it again
-## (variants were not pre-created, but accounted for in _count_matches()
-def get_variants(sample):
-    '''given DNA sample, returns all possible DNA variants (in a list)
-    based on non-exact values in the DNA sample
-    '''
-    # this is a naive implementation, not optimized at all
-    res = []
-    length = len(sample)
-    tmp = [ (0, sample) ]
-    variants = VARIANTS.keys()
-    i = 0
-    while tmp:
-        i, data = tmp.pop(0)
-        while i < length:
-            curr = data[i]
-            if curr not in variants:
-                i += 1
-                continue
-            for char in VARIANTS[curr]:
-                option = '%s%s%s' % (data[:i], char, data[i+1:])
-                tmp.append( (i+1, option) )
-            break
-        if i == length:
-            res.append(data)
-    return res
 
 def get_best_offset(reference, sample):
     '''returns best offset so it best matches reference
     (has least number of differences. Returns offset and the best sample used
     (in case it has variants)
     '''
-    most_matches_overall, best_offset_overall = 0, 0 
-    best_sample = None
-    for sample in get_variants(sample):
-        len_diff = len(reference) - len(sample)
-        assert len_diff >= 0, '[!] Sample is longer than reference!'
-        offset = 0
-        best_offset, most_sample_matches = 0, 0
-        while offset < len_diff:
-            m = _count_matches(reference, sample, offset)
-            if m > most_sample_matches:
-                most_sample_matches = m
-                best_offset = offset
-            offset += 1
-        if most_sample_matches > most_matches_overall:
-            most_matches_overall = most_sample_matches
-            best_sample = sample
-            best_offset_overall = best_offset
-    return best_sample, best_offset_overall
+    offset, best_offset, most_matches_count = 0, 0, 0
+    len_diff = len(reference) - len(sample)
+    assert len_diff >= 0, '[!] Sample is longer than reference!'
+    while offset < len_diff:
+        matches = _count_matches(reference, sample, offset)
+        if matches > most_matches_count:
+            best_offset = offset
+            most_matches_count = matches
+        offset += 1
+
+    return best_offset
 
 def _fill_to_len(reference_, sample_, sample_offset_):
     '''left- and right-fills sample with spaces so len(sample) == len(reference)
@@ -125,7 +90,15 @@ def _get_diffs(a, b):
     res = []
     i = 0
     while i < len_a:
-        res.append((a[i] == FILL_CHAR or a[i] == b[i]) and SAME_CHAR or DIFF_CHAR)
+        if a[i] == FILL_CHAR:
+            tmp = SAME_CHAR
+        elif a[i] == b[i]:
+            tmp = SAME_CHAR
+        elif a[i] in VARIANTS.keys() and b[i] in VARIANTS[a[i]]:
+            tmp = VARIANT_CHAR
+        else:
+            tmp = DIFF_CHAR
+        res.append(tmp)
         i += 1
     return ''.join(res)
 
@@ -192,6 +165,7 @@ def get_triplets(reference, sample, sample_offset, different_only=False):
         s_slice, s = s[:3], s[3:]
         # we only say r_slice and s_slice are different if s_slice
         # contains no spaces and really is different from r_slice
+        # variants in sample are ignored (shown as a difference)
         if len(s_slice.strip()) == 3 and s_slice != r_slice:
             different = True
         else:

@@ -11,10 +11,10 @@ def match_dna_sample(request):
             ref_dna = reference_dna.dna
             ref_name = reference_dna.name 
             dna_sample = dna_sample.strip('\r\n').upper()
-            best_sample, best_offset = get_best_offset(ref_dna, dna_sample)
-            diffs = get_diffs(ref_dna, best_sample, best_offset,
+            best_offset = get_best_offset(ref_dna, dna_sample)
+            diffs = get_diffs(ref_dna, dna_sample, best_offset,
                               show_index_numbers=True)
-            changes = get_triplets(ref_dna, best_sample, best_offset,
+            changes = get_triplets(ref_dna, dna_sample, best_offset,
                                    different_only=True)
             return direct_to_template(request, 'dna_matching_result.html', 
                                       extra_context={'reference': ref_name,
