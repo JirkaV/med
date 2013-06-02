@@ -11,6 +11,7 @@ dajaxice_autodiscover()
 urlpatterns = patterns('',
     url(r'^dna/', include('med.dna.urls')),
     url(r'^glukokortikoidy/', include('med.glukokortikoidy.urls')),
+    url(r'^cmv/', include('med.cmv.urls')),
 
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
@@ -22,5 +23,5 @@ urlpatterns += patterns('',
 
 if settings.DEBUG:
     urlpatterns += patterns('',
-        url(r'^static/(.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT})
+        url(r'^static/(.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT})
     )

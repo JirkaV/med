@@ -1,0 +1,12 @@
+{% extends "base-bootstrap.html" %}
+{% load url from future %}
+
+  {% block content %}
+    <form action="{% url 'cmv_upload' %}" enctype="multipart/form-data" method="post">{% csrf_token %}
+      {% include "form_snippet.html" %}
+      <p />
+      <div class="form-actions">
+        <input type="submit" class="btn btn-large btn-primary" value="Nahraj" />
+      </div>
+    </form>
+  {% endblock %}

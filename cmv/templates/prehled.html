@@ -1,0 +1,41 @@
+{% extends "base-bootstrap.html" %}
+{% load url from future %}
+
+{% block head %}
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.9.1.min.js" charset="utf-8"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.sparkline.min.js"></script>
+
+  <script type="text/javascript">
+    $(function () {
+      // set up sparklines
+      {% for pacient in pacienti %}
+          $('#pacient-sparkline-{{ pacient.id }}').sparkline({{ pacient.sparkline_data }},
+                                                              {'type': 'bar',
+                                                               'chartRangeMin': 100,
+                                                               'spotColor': '',
+                                                               'minSpotColor': '',
+                                                               'maxSpotColor': '',
+                                                               'tooltipPrefix': 'Viremie: ',
+                                                              }
+                                                             );
+      {% endfor %}
+    })
+  </script>
+
+{% endblock %}
+
+{% block content %}
+
+  {% for pacient in pacienti %}
+    <div class="row-fluid">
+      <div class="span3"><strong>{{ pacient }}</strong></div>
+      <div class="span5"><span id="pacient-sparkline-{{ pacient.id }}">Pripravuji...</span></div>
+    </div>
+  {% endfor %}
+
+  <div class="row-fluid">
+    <div class="form-actions">
+      <a href="{% url 'cmv_upload' %}" class="btn btn-large btn-info">Nahraj XLSx</a>
+    </div>
+  </div>
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base-bootstrap.html" %}
 
 {% block title %}
     DNA |
@@ -6,6 +6,10 @@
 
 {% block header %}
     {{ block.super }} > DNA Sample Matching
+{% endblock %}
+
+{% block content-hero %}
+    {{ block.super }}
 {% endblock %}
 
 {% block content %}

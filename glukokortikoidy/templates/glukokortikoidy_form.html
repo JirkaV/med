@@ -4,20 +4,30 @@
     {{ block.super }} Vlozit hodnoty
 {% endblock %}
 
-{% block content %}
+{% block head %}
+  {{ block.super }}
+    <script type="text/javascript">
+
+      function process_ajax_response(data) {
+         console.log(data);
+         Dajax.process(data);
+      }
+      function dajaxice_err() {
+          console.log('error');
+      }
+
+    </script>
+
+{% endblock %}
+
+{% block content-hero %}
 
     <h2>Glukokortikoity (mg)</h2>
     <p />
 
-    <script type="text/javascript">
-    function my_callback(data){
-        alert(data+' received from server');
-    }
-    
-    </script>
     <form action="{% url glukokortikoidy_calculator %}" method="post">{% csrf_token %}
       {% for error in form.non_field_errors %}
-        <div class="alert-message error span8">
+        <div class="alert-message alert-error span8">
             {{ error }}
         </div>
       {% endfor %}
@@ -26,7 +36,12 @@
         <div class="clearfix{% if field.errors %} error{% endif %}" id="field_{{ field.name }}">
           <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
           <div class="input">
-             <input type="text" name="{{ field.name }}" id="{{ field.name }}" onkeyup="Dajaxice.glukokortikoidy.recalculate(Dajax.process,{'field':this.id, 'value':this.value});" />
+             <input type="text"
+                    name="{{ field.name }}"
+                    id="{{ field.name }}"
+                    onkeyup="Dajaxice.glukokortikoidy.recalculate(process_ajax_response,
+                                                                  {'field':this.id, 'value':this.value},
+                                                                  {'error_callback': dajaxice_err});" />
              <span class="help-inline" id="err_{{ field.name }}" ></span>
              {% if field.errors %}{% for error in field.errors %}<span class="help-inline">{{ error }}</span>{% endfor %}{% endif %}
           </div> 

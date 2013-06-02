@@ -23,7 +23,7 @@ class DNASampleForm(forms.Form):
     '''Simple form displaying a single text field'''
     dna_sample = DNAField(label='',
                           widget=forms.widgets.Textarea(
-                                                 attrs={'cols':40, 'rows':20}))
+                                           attrs={'class': 'input-xxlarge'}))
 
 #     reference = forms.ChoiceField(choices=(('54', 'UL54'),
 #                                            ('97', 'UL97')))
