@@ -75,7 +75,7 @@ TEMPLATE_DIRS = (
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',  # for admin
-    'django.core.context_processors.debug',  # {{ if debug }} 
+    'django.core.context_processors.debug',  # {{ if debug }}
     'django.core.context_processors.media',  # for {{ MEDIA_URL }} in templates
     'django.core.context_processors.static',  # for {{ STATIC_URL }} in templates
     'django.contrib.messages.context_processors.messages',
@@ -97,6 +97,78 @@ INSTALLED_APPS = (
 )
 
 DAJAXICE_MEDIA_PREFIX = 'dajaxice'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+#     'root': {
+#         'level': 'WARNING',
+#         'handlers': ['sentry'],
+#     },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'generic': {
+            'format': '%(asctime)s [%(process)d] [%(levelname)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+            'class': 'logging.Formatter',
+        },
+    },
+    'handlers': {
+        'null': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'error_file': {
+            'class': 'logging.FileHandler',
+            'formatter': 'generic',
+            'filename': '/var/log/gunicorn.error.log',
+        },
+        'access_file': {
+            'class': 'logging.FileHandler',
+            'formatter': 'generic',
+            'filename': '/var/log/gunicorn.access.log',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins', 'error_file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+        'django': {
+            'handlers':['null'],
+            'propagate': True,
+            'level':'DEBUG',
+        },
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'gunicorn.error': {
+            'level': 'INFO',
+            'handlers': ['error_file'],
+            'propagate': True,
+        },
+        'gunicorn.access': {
+            'level': 'INFO',
+            'handlers': ['access_file'],
+            'propagate': False,
+        },
+    },
+}
 
 # import local settings such as FORCE_SCRIPT_NAME
 try:
