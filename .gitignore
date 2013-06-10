@@ -1,2 +1,4 @@
 /static
 /med.sqlite3
+/local_settings.py
+*.pyc

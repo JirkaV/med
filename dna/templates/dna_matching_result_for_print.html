@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>DNA Sample Matching - Print Versions</title>
+    <style type="text/css">
+.plain {
+  padding: 0 3px 2px;
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  display: block;
+  font-size: 12px;
+  line-height: 10px;
+  word-break: break-all;
+  word-wrap: break-word;
+  white-space: pre;
+  white-space: pre-wrap;
+}
+    </style>
+
+  </head>
+
+  <body class="plain">
+Changes Between Sample and {{ reference.name }} Reference:
+{% if session_error %}Unable to find data in the system, please enter the sample data again.{% else %}
+{% if changes %}{% for junk, idx, ref, sample in changes %}
+      {{ idx }}: {{ ref }} -> {{ sample }}
+  {% endfor %}
+{% else %}
+  None
+{% endif %}
+Complete Comparison Printout
+{% for diff in diffs %}
+{{ diff }}
+{% endfor %}
+
+Sample compared to reference {{ reference.name }} on {{ timestamp|date:"r" }}
+{% endif %}
+</pre>
+  </body>
+</html>
