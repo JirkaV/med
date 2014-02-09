@@ -1,5 +1,4 @@
 {% extends "base-bootstrap.html" %}
-{% load url from future %}
 
   {% block content %}
     <form action="{% url 'cmv_upload' %}" enctype="multipart/form-data" method="post">{% csrf_token %}

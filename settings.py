@@ -170,6 +170,9 @@ LOGGING = {
     },
 }
 
+# I really don't want to rewrite stuff now, keep the old serializer
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
+
 # import local settings such as FORCE_SCRIPT_NAME
 try:
     from local_settings import *

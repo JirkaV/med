@@ -1,16 +1,15 @@
 from django.http import HttpResponseRedirect
-from django.views.generic.simple import direct_to_template
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
 from django.contrib import messages
+from med.common.response import response
 from forms import UploadForm
 from imports import process_xlsx
 from models import Pacient
 
 def prehled(request):
-    return direct_to_template(request,
-                              'prehled.html',
-                              extra_context={'pacienti': Pacient.objects.all()})
+    return response(request, 'prehled.html',
+                             extra_context={'pacienti': Pacient.objects.all()})
 
 def upload(request):
     if request.method == 'POST':
@@ -30,6 +29,5 @@ def upload(request):
 
             return HttpResponseRedirect(reverse('cmv_prehled'))
     form = UploadForm()
-    return direct_to_template(request,
-                              'xlsx_upload.html',
-                              extra_context={'form': form})
+    return response(request, 'xlsx_upload.html',
+                             extra_context={'form': form})

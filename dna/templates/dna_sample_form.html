@@ -10,7 +10,7 @@
     Paste DNA sample below.
     <p />
     
-    <form action="{% url match_dna_sample %}" method="post">{% csrf_token %}
+    <form action="{% url 'match_dna_sample' %}" method="post">{% csrf_token %}
       {% include "form_snippet.html" %}
       <input type="submit" class="btn btn-large btn-primary" value="Match against reference" />
     </form>

@@ -23,7 +23,7 @@
     <h2>Glukokortikoity (mg)</h2>
     <p />
 
-    <form action="{% url glukokortikoidy_calculator %}" method="post">{% csrf_token %}
+    <form action="{% url 'glukokortikoidy_calculator' %}" method="post">{% csrf_token %}
       {% for error in form.non_field_errors %}
         <div class="alert-message alert-error span8">
             {{ error }}

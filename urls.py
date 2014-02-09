@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from dajaxice.core import dajaxice_autodiscover
 
 dajaxice_autodiscover()

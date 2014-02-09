@@ -1,5 +1,5 @@
-from django.views.generic.simple import direct_to_template
 from django.utils.timezone import now
+from med.common.response import response
 from forms import DNASampleForm
 from utils import get_best_offset, get_diffs, get_triplets
 
@@ -23,12 +23,12 @@ def match_dna_sample(request):
             request.session['changes'] = changes
             request.session['dna_sample'] = dna_sample
 
-            return direct_to_template(request, 'dna_matching_result.html',
+            return response(request, 'dna_matching_result.html',
                                       extra_context={'reference_name': ref_name,
                                                      'changes': changes})
     else:
         form = DNASampleForm()
-    return direct_to_template(request, 'dna_sample_form.html', 
+    return response(request, 'dna_sample_form.html',
                               extra_context={'form': form})
 
 def dna_comparison_for_print(request):
@@ -40,11 +40,11 @@ def dna_comparison_for_print(request):
         changes = request.session['changes']
         dna_sample = request.session['dna_sample']
     except KeyError:
-        return direct_to_template(request, 'dna_matching_result_for_print.html',
+        return response(request, 'dna_matching_result_for_print.html',
                               extra_context={'session_error': True})
     diffs = get_diffs(reference_dna.dna, dna_sample, best_offset,
                       show_index_numbers=True)
-    return direct_to_template(request, 'dna_matching_result_for_print.html',
+    return response(request, 'dna_matching_result_for_print.html',
                               extra_context={'reference': reference_dna,
                                              'changes': changes,
                                              'diffs': diffs,

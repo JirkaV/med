@@ -1,4 +1,3 @@
-from django.utils import simplejson
 from django.template.defaultfilters import floatformat
 from dajaxice.core import dajaxice_functions
 from dajaxice.decorators import dajaxice_register
