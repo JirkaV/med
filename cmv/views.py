@@ -1,6 +1,6 @@
+import json
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.utils import simplejson
 from django.contrib import messages
 from med.common.response import response
 from forms import UploadForm
@@ -19,7 +19,7 @@ def upload(request):
             p, created = Pacient.objects.get_or_create(rc=xls_data['rc'])
             p.jmeno = xls_data['jmeno']
             p.prijmeni = xls_data['prijmeni']
-            p.json_data = simplejson.dumps(xls_data['data'])
+            p.json_data = json.dumps(xls_data['data'])
             p.save()
 
             if created:
