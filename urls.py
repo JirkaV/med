@@ -11,7 +11,7 @@ dajaxice_autodiscover()
 urlpatterns = patterns('',
     url(r'^dna/', include('med.dna.urls')),
     url(r'^glukokortikoidy/', include('med.glukokortikoidy.urls')),
-    url(r'^cmv/', include('med.cmv.urls')),
+#    url(r'^cmv/', include('med.cmv.urls')),
 
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
