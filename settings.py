@@ -93,7 +93,7 @@ INSTALLED_APPS = (
     'dajax',
     'dna',
     'glukokortikoidy',
-    'cmv',
+#    'cmv',
 )
 
 DAJAXICE_MEDIA_PREFIX = 'dajaxice'
