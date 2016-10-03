@@ -151,7 +151,7 @@ def get_triplets(reference, sample, sample_offset, different_only=False):
             different = True
         else:
             different = False
-        if different or not different_only:          
+        if different or not different_only:
             res.append((different, idx, r_slice, s_slice)) # (( )) - add tuple
         idx += 1
     return res

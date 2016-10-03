@@ -16,11 +16,11 @@ def match_dna_sample(request):
             best_offset = get_best_offset(ref_dna, dna_sample)
             changes = get_triplets(ref_dna, dna_sample, best_offset,
                                    different_only=True)
-
             # save data to session for print
             request.session['timestamp'] = template_date(now(), 'r')  # Django does not like timestamps in session anymore
             request.session['best_offset'] = best_offset
             request.session['reference_dna'] = ref_dna
+            request.session['reference_name'] = ref_name
             request.session['changes'] = changes
             request.session['dna_sample'] = dna_sample
 
@@ -37,6 +37,7 @@ def dna_comparison_for_print(request):
         timestamp = request.session['timestamp']
         best_offset = request.session['best_offset']
         reference_dna = request.session['reference_dna']
+        reference_name = request.session['reference_name']
         changes = request.session['changes']
         dna_sample = request.session['dna_sample']
     except KeyError:
@@ -46,6 +47,7 @@ def dna_comparison_for_print(request):
                       show_index_numbers=True)
     return render(request, 'dna/dna_matching_result_for_print.html',
                            {'reference': reference_dna,
+                            'reference_name': reference_name,
                             'changes': changes,
                             'diffs': diffs,
                             'timestamp_string': timestamp})

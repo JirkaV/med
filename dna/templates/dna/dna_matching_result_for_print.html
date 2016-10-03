@@ -20,7 +20,7 @@
   </head>
 
   <body class="plain">
-Changes Between Sample and {{ reference.name }} Reference:
+Changes Between Sample and {{ reference_name }} Reference:
 {% if session_error %}Unable to find data in the system, please enter the sample data again.{% else %}
 {% if changes %}{% for junk, idx, ref, sample in changes %}
       {{ idx }}: {{ ref }} -> {{ sample }}
@@ -33,7 +33,7 @@ Complete Comparison Printout
 {{ diff }}
 {% endfor %}
 
-Sample compared to reference {{ reference.name }} on {{ timestamp_string }}
+Sample compared to reference {{ reference_name }} on {{ timestamp_string }}
 {% endif %}
 </pre>
   </body>
