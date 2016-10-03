@@ -1,0 +1,5 @@
+FORCE_SCRIPT_NAME = '/apps/med'
+
+STATIC_URL = '/static/med/'
+
+STATIC_ROOT = '/var/webapps/static/med'

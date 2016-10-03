@@ -1,0 +1,15 @@
+[Unit]
+Description=gunicorn daemon for Med webapps
+After=network.target
+
+[Service]
+PIDFile=/var/webapps/med.pid
+User=med
+Group=med
+WorkingDirectory=/var/webapps/med/med
+ExecStart=/home/med/.virtualenvs/webapps/bin/gunicorn --workers=3 --bind=127.0.0.1:8999 --error-logfile=/var/log/gunicorn.error.log --access-logfile=/var/log/gunicorn.access.log med.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target

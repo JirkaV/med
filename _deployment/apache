@@ -1,9 +1,12 @@
-    ProxyRequests Off
-    ProxyVia On
+        ProxyRequests Off
+        ProxyVia On
 
-    ProxyPass /apps/med http://127.0.0.1:9000
-    ProxyPassReverse /apps/med http://127.0.0.1:9000
-    ProxyPass /dajaxice http://127.0.0.1:9000/dajaxice
-    ProxyPassReverse /dajaxice http://127.0.0.1:9000/dajaxice
+        ProxyPass /apps/med http://127.0.0.1:8999
+        ProxyPassReverse /apps/med http://127.0.0.1:8999
 
-    Alias /static/med /data/webapps/med/static
+        <Directory /var/webapps/static/>
+                Options -Indexes
+                AllowOverride None
+                Require all granted
+        </Directory>
+        Alias /static /var/webapps/static
