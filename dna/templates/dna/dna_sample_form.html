@@ -1,0 +1,18 @@
+{% extends "dna/base_dna.html" %}
+
+{% block title %}
+    {{ block.super }} Insert Sample
+{% endblock %}
+
+{% block content-hero %}
+    <h2>DNA Sample</h2>
+
+    Paste DNA sample below.
+    <p />
+    
+    <form action="{% url 'match_dna_sample' %}" method="post">{% csrf_token %}
+      {% include "common/form_snippet.html" %}
+      <input type="submit" class="btn btn-large btn-primary" value="Match against reference" />
+    </form>
+
+{% endblock %}

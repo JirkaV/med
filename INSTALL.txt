@@ -1,2 +1,0 @@
-put this to the Apache config just before the WSGIScriptAlias:
- RewriteRule ^/dajaxice/(.*)$ <<app_url>>/dajaxice/$1 [PT]

@@ -31,7 +31,7 @@ def calculate_values(data):
             xdata[k] = v
     data = xdata
     if len(data) > 1:
-        raise ValueError, 'Too much data'
+        raise ValueError('Too much data')
 
     k, v = data.items()[0]
     base_v = BASE_VALUES[k]

@@ -1,15 +1,15 @@
-from utils import get_sequence_between_primers as gsbp
-from utils import get_best_offset as gbo
-from utils import get_triplets
+#  from .utils import get_sequence_between_primers as gsbp  - not really needed for production
+from .utils import get_best_offset as gbo
+from .utils import get_triplets
 
 TEST_DNA = 'AAAACCCCTTTTGGGG'
 PRIMER1 = 'AACC'
 PRIMER2 = 'TTGG'
 
-def test_sequence_between_primers():
-    '''test that searching primers in reference works'''
-    assert gsbp(TEST_DNA, 'AGC', 'CGA') == None
-    assert gsbp(TEST_DNA, PRIMER1, PRIMER2) == 'AACCCCTTTTGG'
+# def test_sequence_between_primers():
+#     '''test that searching primers in reference works'''
+#     assert gsbp(TEST_DNA, 'AGC', 'CGA') == None
+#     assert gsbp(TEST_DNA, PRIMER1, PRIMER2) == 'AACCCCTTTTGG'
 
 def test_best_offset():
     '''test that best offset is located correctly'''

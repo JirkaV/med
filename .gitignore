@@ -1,4 +1,5 @@
 /static
 /med.sqlite3
-/local_settings.py
 *.pyc
+/med/local_settings.py
+__pycache__

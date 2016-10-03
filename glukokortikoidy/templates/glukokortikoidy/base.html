@@ -1,0 +1,19 @@
+{% extends "common/base-bootstrap.html" %}
+
+{% load static %}
+
+{% block head %}
+  <script src="{% static 'js/jquery-1.9.1.min.js' %}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
+{% block title %}
+    Glukokortikoidy |
+{% endblock %}
+
+{% block header %}
+    {{ block.super }} > Glukokortikoidy
+{% endblock %}
+
+{% block content-hero %}
+    {{ block.super }}
+{% endblock %}

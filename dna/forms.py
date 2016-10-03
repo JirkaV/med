@@ -1,9 +1,9 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from models import ReferenceDNA
-from dna_values import DNA_ELEMENTS, VARIANTS
+from .models import ReferenceDNA
+from .dna_values import DNA_ELEMENTS, VARIANTS
 
-VALID = DNA_ELEMENTS + VARIANTS.keys()
+VALID = DNA_ELEMENTS + list(VARIANTS.keys())
 
 class DNAField(forms.Field):
     '''custom class handling multiple IP addresses'''

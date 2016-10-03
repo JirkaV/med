@@ -23,6 +23,6 @@ class GForm(forms.Form):
             except KeyError:
                 pass
         if cnt != 1:
-            raise ValidationError, u'Only and only one field must be entered!'
+            raise ValidationError('Only and only one field must be entered!')
         return self.cleaned_data
     
