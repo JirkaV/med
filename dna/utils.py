@@ -147,6 +147,10 @@ def get_triplets(reference, sample, sample_offset, different_only=False):
         # we only say r_slice and s_slice are different if s_slice
         # contains no spaces and really is different from r_slice
         # variants in sample are ignored (shown as a difference)
+        #
+        # it is OK to *not* display changes in the first or last kodon (triplet)
+        # if they are incomplete, so ignoring anything with len < 3 is fine
+        # (verified with the customer)
         if len(s_slice.strip()) == 3 and s_slice != r_slice:
             different = True
         else:
