@@ -75,10 +75,6 @@
 
     <h2>Glukokortikoity (mg)</h2>
     <p />
-    <p class="alert alert-error">
-      Momentalne nefunkcni, na oprave se pracuje...
-    </p>
-
     <form action="{% url 'glukokortikoidy_calculator' %}" method="post">{% csrf_token %}
       {% for error in form.non_field_errors %}
         <div class="alert-message alert-error span8">
