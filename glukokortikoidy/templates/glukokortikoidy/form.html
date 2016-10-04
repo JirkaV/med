@@ -1,18 +1,71 @@
 {% extends "glukokortikoidy/base.html" %}
 
+{% load static %}
+
 {% block title %}
     {{ block.super }} Vlozit hodnoty
 {% endblock %}
 
 {% block head %}
   {{ block.super }}
-    <script type="text/javascript">
+  <script src="{% static 'js/collections.min.js' %}" type="text/javascript" charset="utf-8"></script>
 
-      function process_ajax_response(data) {
-         Dajax.process(data);
+    <script type="text/javascript">
+      function roundToTwo(num) {
+        return +(Math.round(num + "e+2") + "e-2");
       }
-      function dajaxice_err() {
+
+      function isNumber(value) {
+        if (isNaN(value)) {
+          return false;
+        }
+        x = parseFloat(value);
+        if (Number(x) === x && x % 1 ===0) { return true };  // int
+        if (Number(x) === x && x % 1 !==0) { return true };  // float
+        return false;
       }
+
+      var base_ratios = Dict({
+          betamethason: 0.75,
+          cortison: 25.0,
+          dexamethason: 0.75,
+          hydrocortison: 20.0,
+          metylprednisolon: 4.0,
+          prednisolon: 5.0,
+          prednison: 5.0,
+          triamcinolon: 4.0
+      });
+      var elements =  base_ratios.items();
+
+      function recalculate(field_name, value) {
+        if (value) {
+          value = value.replace(',', '.');
+          if (isNumber(value) ) {
+
+            // clear any possible "error" states on fields
+            $('div[id^="field_"]').each(function() {
+              $(this).removeClass('error');
+            });
+
+            var base_value = base_ratios.get(field_name)
+            var ratio = value / base_value
+
+            elements.forEach(function(elem){
+              var name = elem[0];
+              if (name != field_name) {  // don't interfere with the user typing
+                var base_value = elem[1];
+                var new_value = roundToTwo(base_value * ratio);
+                $('input[name="'+name+'"]').val(new_value);
+              };
+            });
+
+          } else {
+            // mark input as invalid, not a number
+            $('div[id="field_'+field_name+'"]').addClass('error');
+          };
+
+        };
+      };
 
     </script>
 
@@ -34,18 +87,19 @@
       {% endfor %}
       
       {% for field in form %}
-        <div class="clearfix{% if field.errors %} error{% endif %}" id="field_{{ field.name }}">
+        <div class="control-group{% if field.errors %}  error{% endif %}" id="field_{{ field.name }}">
           <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
-          <div class="input">
+          <div class="controls">
+            <div class="input">
              <input type="text"
                     name="{{ field.name }}"
                     id="{{ field.name }}"
-                    onkeyup="Dajaxice.glukokortikoidy.recalculate(process_ajax_response,
-                                                                  {'field':this.id, 'value':this.value},
-                                                                  {'error_callback': dajaxice_err});" />
+                    onkeyup="recalculate(this.name, this.value)"
+                     />
              <span class="help-inline" id="err_{{ field.name }}" ></span>
              {% if field.errors %}{% for error in field.errors %}<span class="help-inline">{{ error }}</span>{% endfor %}{% endif %}
-          </div> 
+            </div>
+          </div>
           </label>
         </div>
       {% endfor %}
