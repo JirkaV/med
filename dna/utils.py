@@ -7,52 +7,42 @@ DIFF_CHAR = '*'  # display where sample is different from reference
 SAME_CHAR = ' '  # display where sample matches reference
 VARIANT_CHAR = ':'  # display where sample matches reference, but was a variant match
 
-# def get_sequence_between_primers(sequence, start_primer, end_primer):
-#     '''returns sequence of DNA between primers (including the primers)
-#     or None if there is no match
-#     '''
-#     # yes, it'd be possible to use simple index() ...
-#     # this opens more possibilities in future (imperfect primers)
-#     start = SequenceMatcher(None, sequence, start_primer)
-#     match = start.find_longest_match(0, len(sequence),
-#                                      0, len(start_primer))
-#     if match.size != len(start_primer):
-#         return None
-#     start_pos = match.a
-#
-#     end = SequenceMatcher(None, sequence, end_primer)
-#     match = end.find_longest_match(0, len(sequence),
-#                                      0, len(end_primer))
-#     if match.size != len(end_primer):
-#         return None
-#     end_pos = match.a + match.size
-#     return sequence[start_pos:end_pos]
-
-def _count_matches(reference, sample_, offset_):
-    '''returns number of matches where sample[i+offset] == reference[i]'''
-    r = reference[offset_:]
-    s = sample_
-    matches = 0
-    for x in range(len(s)):
-        if r[x] == s[x] or (s[x] in VARIANTS and r[x] in VARIANTS[s[x]]):
-            matches += 1
-    return matches
+def _count_failures(r, s, min_previous_failures):
+    '''returns number failures (mismatches) between reference cut and sample.
+    May return falsely big number to indicate early bailout if current result
+    is already worse then best known previous result'''
+    # this code is heavily optimized for speed, do not change without
+    # speed testing  (tested on CPython 3.5)
+    len_s = len(s)
+    failures = 0
+    for x in range(len_s):
+        r_x = r[x]  # reduce array lookups below
+        s_x = s[x]
+        if r_x != s_x:
+            if not (s_x in VARIANTS and r_x in VARIANTS[s_x]):
+                failures += 1
+                if failures >= min_previous_failures:
+                    return len_s  # no point in returning the actual number
+    return failures
 
 def get_best_offset(reference, sample):
     '''returns best offset so it best matches reference
-    (has least number of differences. Returns offset and the best sample used
-    (in case it has variants)
+    (has least number of differences.
     '''
-    offset, best_offset, most_matches_count = 0, 0, 0
+    offset, best_offset, least_failures = 0, 0, len(sample)
     len_diff = len(reference) - len(sample)
     assert len_diff >= 0, '[!] Sample is longer than reference!'
-    while offset < len_diff:
-        matches = _count_matches(reference, sample, offset)
-        if matches > most_matches_count:
-            best_offset = offset
-            most_matches_count = matches
-        offset += 1
 
+    # note - passing reference[offset:] to _count_failures is quicker than
+    # passing the original reference + offset number
+    # and using "r_x = r[offset+x]" in _count_failures
+
+    while offset < len_diff:
+        failures = _count_failures(reference[offset:], sample, least_failures)
+        if failures < least_failures:
+            best_offset = offset
+            least_failures = failures
+        offset += 1
     return best_offset
 
 def _fill_to_len(reference_, sample_, sample_offset_):
@@ -159,21 +149,6 @@ def get_triplets(reference, sample, sample_offset, different_only=False):
             res.append((different, idx, r_slice, s_slice)) # (( )) - add tuple
         idx += 1
     return res
-
-# def check():
-#     '''old development function for checking results from the console'''
-#
-#     # UL54A
-#     block_to_match = get_sequence_between_primers(UL54_REFERENCE,
-#                                                   UL54B_PRIMER_6,
-#                                                   UL54B_PRIMER_5_REVERSED)
-#     matching_offset = get_best_offset(block_to_match, UL54B)
-#     display_diffs(block_to_match, UL54B, matching_offset)
-#
-#     for triplet in get_triplets(block_to_match, UL54B, matching_offset,
-#                           different_only=True):
-#         print(triplet)
-
 
 def fill_database():
     from .models import ReferenceDNA

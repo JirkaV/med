@@ -3,3 +3,4 @@
 *.pyc
 /med/local_settings.py
 __pycache__
+/.cache
