@@ -29,8 +29,8 @@ Changes Between Sample and {{ reference_name }} Reference:
   None
 {% endif %}
 Complete Comparison Printout
-{% for diff in diffs %}
-{{ diff }}
+{% for row in rows %}
+{{ row }}
 {% endfor %}
 
 Sample compared to reference {{ reference_name }} on {{ timestamp_string }}

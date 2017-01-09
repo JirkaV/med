@@ -20,13 +20,22 @@ class DNAField(forms.Field):
             raise ValidationError(errors)
 
 class DNASampleForm(forms.Form):
-    '''Simple form displaying a single text field'''
+    '''Form for DNA sample and reference DNA choice'''
+    dna_sample = DNAField(label='',
+                          widget=forms.widgets.Textarea(
+                                           attrs={'class': 'input-xxlarge'}))
+    reference_dna = forms.ModelChoiceField(label='Reference DNA',
+                                           queryset=ReferenceDNA.objects.all(),
+                                           empty_label=None)
+
+class PlainDNASampleForm(forms.Form):
+    '''Plain form displaying a single field for DNA sample'''
     dna_sample = DNAField(label='',
                           widget=forms.widgets.Textarea(
                                            attrs={'class': 'input-xxlarge'}))
 
-#     reference = forms.ChoiceField(choices=(('54', 'UL54'),
-#                                            ('97', 'UL97')))
+class ReferenceSelectForm(forms.Form):
+    '''Form for selecting reference DNA'''
     reference_dna = forms.ModelChoiceField(label='Reference DNA',
                                            queryset=ReferenceDNA.objects.all(),
                                            empty_label=None)

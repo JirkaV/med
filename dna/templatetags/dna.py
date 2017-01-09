@@ -17,3 +17,9 @@ def highlight_changes(ref, sample):
             s.append(stmp)
     return '%s -> %s' % (''.join(r), ''.join(s)) 
 
+@register.filter
+def shorten(sample):
+    '''show "short" version of DNA sample, displaying beginning and end'''
+    if len(sample) < 30:
+        return sample
+    return sample[:10] + ' ... ' + sample[-10:]

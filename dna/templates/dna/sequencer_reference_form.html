@@ -1,0 +1,17 @@
+{% extends "dna/base_dna.html" %}
+
+{% block title %}
+    {{ block.super }} Sequencer | Select Reference DNA
+{% endblock %}
+
+{% block content-hero %}
+    <h2>Sequencer - Select Reference DNA</h2>
+
+    <p />
+
+    <form action="{% url 'sequencer_select_reference' %}" method="post">{% csrf_token %}
+      {% include "common/form_snippet.html" %}
+      <input type="submit" class="btn btn-large btn-primary" value="Select" />
+    </form>
+
+{% endblock %}

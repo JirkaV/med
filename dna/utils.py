@@ -45,69 +45,30 @@ def get_best_offset(reference, sample):
         offset += 1
     return best_offset
 
-def _fill_to_len(reference_, sample_, sample_offset_):
-    '''left- and right-fills sample with spaces so len(sample) == len(reference)
-    as it makes other functions much more simple
+def get_output_rows(list_of_strings,
+                    width=80,
+                    add_index_numbers=False,
+                    collapse_empty_lines=False):
+    '''given list of strings (all expected to be of same length, returns
+    list of rows of desired width, optionally including index number
+    for better orientation where the original strings alternate in rows
     '''
-    assert len(reference_) >= len(sample_) + sample_offset_
-    return '%s%s%s' % (FILL_CHAR * sample_offset_, 
-                    sample_, 
-               FILL_CHAR * (len(reference_) - (len(sample_) + sample_offset_)))
-    
-def _get_diffs(a, b):
-    '''returns a string constructed using DIFF_CHAR and SAME_CHAR'''
-    len_a = len(a)
-    assert len_a == len(b)
     res = []
-    i = 0
-    while i < len_a:
-        if a[i] == FILL_CHAR:
-            tmp = SAME_CHAR
-        elif a[i] == b[i]:
-            tmp = SAME_CHAR
-        elif a[i] in VARIANTS.keys() and b[i] in VARIANTS[a[i]]:
-            tmp = VARIANT_CHAR
-        else:
-            tmp = DIFF_CHAR
-        res.append(tmp)
-        i += 1
-    return ''.join(res)
-
-def get_diffs(reference, sample, sample_offset, width=80,
-              insert_blank_lines=True,
-              show_index_numbers=True):
-    '''prepares visual representation of DNA differences'''
-    r = reference
-    s = _fill_to_len(reference, sample, sample_offset)
-    res = []
-    curr_index = 0
-    while r:
-        rcut, r = r[:width], r[width:]
-        scut, s = s[:width], s[width:]
-        diffs = _get_diffs(scut, rcut)
-        if show_index_numbers:
-            rcut = '%s %s %s' % ('%6i' % (curr_index + 1),
-                                 rcut,
-                                 '%6i' % (curr_index + width))
-            scut = '%s %s %s' % (' '*6,
-                                 scut,
-                                 ' '*6)
-            diffs = '%s %s %s' % (' '*6,
-                                  diffs,
-                                  ' '*6)
-        res.extend([rcut, scut, diffs])
-        if not show_index_numbers and insert_blank_lines:
-            res.append(' ')  # one space to keep <pre> in HTML happy. We only
-                             # need to do this is show_index_numbers is False
-                             # as it inserts blanks anyway
-        curr_index += width
+    length = len(list_of_strings[0])  # all expected to be of same length
+    curr = 0
+    while curr < length:
+        for i, curr_string in enumerate(list_of_strings):
+            line = curr_string[curr:curr+width]
+            if add_index_numbers:
+                if i == 0:  # line that needs index numbers
+                    line = '{:>6} {} {:>6}'.format(curr+1, line, curr+width)
+                else:
+                    line = '{} {} {}'.format(' '*6, line, ' '*6)
+            if collapse_empty_lines and not line.strip():
+                line = ' '  # we need to keep at least one space for <pre> to work
+            res.append(line)
+        curr += width
     return res
-
-def display_diffs(*args, **kwargs):
-    '''provides visual representation of DNA differences'''
-    diffs = get_diffs(*args, **kwargs)
-    for diff in diffs:
-        print(diff)
 
 def get_triplets(reference, sample, sample_offset, different_only=False):
     '''cuts reference and sample to sections of three (slicing done
@@ -128,7 +89,10 @@ def get_triplets(reference, sample, sample_offset, different_only=False):
                                                (False, 6, 'CGC', '   ')]
     '''
     r = reference
-    s = _fill_to_len(r, sample, sample_offset)
+    s = '{}{}{}'.format(FILL_CHAR*sample_offset,
+                        sample,
+                        FILL_CHAR*(len(r)-(len(sample)+sample_offset)))
+
     idx = 1  # index from 1 as it's for humans
     res = []
     while r:
@@ -156,3 +120,70 @@ def fill_database():
          _, created = ReferenceDNA.objects.get_or_create(name=name, dna=reference_dna)
          if created:
             print('created {}'.format(name))
+
+def align_samples(samples):
+    '''tries to align existing samples to least possible number of lines
+    for later display (so they don't overlap), e.g.
+
+    AAGGGATCGGATCGA        CGATCGATCTCGGATCG   CCGATCGGCTAGCTTGCG
+              ATCGACTTAGGCTCGAT           CGACGCCGATC
+    returns list (one per line) of lists (containings samples on the line)
+    '''
+    res = []
+    todo = samples[:]
+    todo.sort(key=lambda x: x['offset'])  # sort by offset
+    while todo:
+        last_offset = 0
+        todo_copy = todo[:]
+        todo = []
+        thisline = []
+        for sample in todo_copy:
+            if sample['offset'] >= last_offset:
+                thisline.append(sample)
+                last_offset = sample['offset'] + len(sample['dna'])
+            else:
+                todo.append(sample)
+        res.append(thisline)
+    return res
+
+def prepare_sample_for_display(reference, sample, sample_offset):
+    '''given reference, sample and offset returns list of 3 strings suitable
+    for get_output_rows() where:
+        * first row is reference unchanged
+        * second row is sample at proper offset extended to proper length
+          using FILL_CHAR
+        * third row is appropriately composed of SAME_CHAR, DIFF_CHAR
+          and VARIANT_CHAR at proper places
+    '''
+    lfill = FILL_CHAR*sample_offset
+    rfill = FILL_CHAR*(len(reference)-(sample_offset+len(sample)))
+    thirdrow_chars = []
+    for i, char in enumerate(sample):
+        if char == reference[sample_offset+i]:
+            thirdrow_chars.append(SAME_CHAR)
+        else:
+            if char in VARIANTS:
+                thirdrow_chars.append(VARIANT_CHAR)
+            else:
+                thirdrow_chars.append(DIFF_CHAR)
+    return [reference,
+            '{}{}{}'.format(lfill, sample, rfill),
+            '{}{}{}'.format(lfill, ''.join(thirdrow_chars), rfill)]
+
+def prepare_sequencer_data_for_display(reference, aligned_samples):
+    '''takes reference and samples aligned using align_samples()
+    and prepares data for get_output_rows()
+    '''
+    res = [reference]
+    for samples_line in aligned_samples:
+        tmp = []
+        last_offset = 0
+        for elem in samples_line:
+            wanted = elem['offset']
+            tmp.append(FILL_CHAR*(wanted-last_offset))
+            tmp.append(elem['dna'])
+            last_offset = elem['offset'] + len(elem['dna'])
+        tmp = ''.join(tmp)
+        tmp += FILL_CHAR*(len(reference)-len(tmp))
+        res.append(tmp)
+    return res

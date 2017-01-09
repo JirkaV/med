@@ -1,0 +1,18 @@
+{% extends "dna/base_dna.html" %}
+
+{% block title %}
+    {{ block.super }} Sequencer | Add Sample
+{% endblock %}
+
+{% block content-hero %}
+    <h2>Sequencer - Add DNA Sample</h2>
+
+    Paste DNA sample below.
+    <p />
+
+    <form action="{% url 'add_to_sequencer' %}" method="post">{% csrf_token %}
+      {% include "common/form_snippet.html" %}
+      <input type="submit" class="btn btn-large btn-primary" value="Add to Sequencer" />
+    </form>
+
+{% endblock %}
