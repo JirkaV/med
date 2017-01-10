@@ -98,21 +98,37 @@ def test_get_rows():
     assert get_output_rows(['A']) == ['A']
     assert get_output_rows(['A'*160]) == ['A'*80, 'A'*80]
     assert get_output_rows(['A'*10], width=5) == ['A'*5, 'A'*5]
+    assert get_output_rows(['A'*10], width=5, separator_line=True) == ['A'*5, ' '*5, 'A'*5]
     assert get_output_rows(['A'*10, 'T'*10], width=5) == ['A'*5, 'T'*5, 'A'*5, 'T'*5]
     assert get_output_rows(['A'*10, ' '*10], width=5) == ['A'*5, ' '*5, 'A'*5, ' '*5]
     assert (get_output_rows(['A'* 10, ' '*10], width=5, collapse_empty_lines=True) ==
             ['AAAAA', ' ', 'AAAAA', ' '])
-
     assert (get_output_rows(['A'*10, 'T'*10], width=5, add_index_numbers=True) ==
             ['     1 AAAAA      5',
              '       TTTTT       ',
              '     6 AAAAA     10',
              '       TTTTT       '])
+    assert (get_output_rows(['A'*10, 'T'*10], width=5,
+                            add_index_numbers=True, separator_line=True) ==
+            ['     1 AAAAA      5',
+             '       TTTTT       ',
+             '                   ',
+             '     6 AAAAA     10',
+             '       TTTTT       '])
 
     assert (get_output_rows(['A'*10, ' '*10], width=5,
-                      collapse_empty_lines=True,
-                      add_index_numbers=True) ==
+                            collapse_empty_lines=True,
+                            add_index_numbers=True) ==
             ['     1 AAAAA      5',
+             ' ',
+             '     6 AAAAA     10',
+             ' '])
+    assert (get_output_rows(['A'*10, ' '*10], width=5,
+                             collapse_empty_lines=True,
+                             add_index_numbers=True,
+                             separator_line=True) ==
+            ['     1 AAAAA      5',
+             ' ',
              ' ',
              '     6 AAAAA     10',
              ' '])

@@ -1,6 +1,4 @@
-from difflib import SequenceMatcher
 from .dna_values import VARIANTS
-from .data import *
 
 FILL_CHAR = ' '  # added to sample on left and right to match reference length
 DIFF_CHAR = '*'  # display where sample is different from reference
@@ -48,7 +46,8 @@ def get_best_offset(reference, sample):
 def get_output_rows(list_of_strings,
                     width=80,
                     add_index_numbers=False,
-                    collapse_empty_lines=False):
+                    collapse_empty_lines=False,
+                    separator_line=False):
     '''given list of strings (all expected to be of same length, returns
     list of rows of desired width, optionally including index number
     for better orientation where the original strings alternate in rows
@@ -65,9 +64,12 @@ def get_output_rows(list_of_strings,
                 else:
                     line = '{} {} {}'.format(' '*6, line, ' '*6)
             if collapse_empty_lines and not line.strip():
-                line = ' '  # we need to keep at least one space for <pre> to work
+                line = FILL_CHAR  # we need to keep at least one space for <pre> to work
             res.append(line)
         curr += width
+        if separator_line and curr < length:  # don't add separator as last line
+            # width+14 is for line + 6-chars aligned index on each side separated by a space
+            res.append(FILL_CHAR*(1 if collapse_empty_lines else width+14 if add_index_numbers else width))
     return res
 
 def get_triplets(reference, sample, sample_offset, different_only=False):
@@ -105,10 +107,7 @@ def get_triplets(reference, sample, sample_offset, different_only=False):
         # it is OK to *not* display changes in the first or last kodon (triplet)
         # if they are incomplete, so ignoring anything with len < 3 is fine
         # (verified with the customer)
-        if len(s_slice.strip()) == 3 and s_slice != r_slice:
-            different = True
-        else:
-            different = False
+        different = bool(len(s_slice.strip()) == 3 and s_slice != r_slice)
         if different or not different_only:
             res.append((different, idx, r_slice, s_slice)) # (( )) - add tuple
         idx += 1
@@ -116,9 +115,10 @@ def get_triplets(reference, sample, sample_offset, different_only=False):
 
 def fill_database():
     from .models import ReferenceDNA
+    from .data import REFERENCE_DATA
     for name, reference_dna in REFERENCE_DATA:
-         _, created = ReferenceDNA.objects.get_or_create(name=name, dna=reference_dna)
-         if created:
+        _, created = ReferenceDNA.objects.get_or_create(name=name, dna=reference_dna)
+        if created:
             print('created {}'.format(name))
 
 def align_samples(samples):

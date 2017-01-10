@@ -120,12 +120,12 @@ def sequencer_result_for_print(request):
 
     rows = get_output_rows(prepare_sequencer_data_for_display(reference_model.dna,
                                                               aligned_samples),
-                           add_index_numbers=True)
+                           add_index_numbers=True,
+                           separator_line=True)
 
 #    return render(request, 'dna/sequencer_result.html')
 
     return render(request, 'dna/dna_matching_result_for_print.html',
                            {'reference_name': reference_model.name,
-#                            'changes': changes,
                             'rows': rows})
 
