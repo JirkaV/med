@@ -10,37 +10,31 @@
     {{ block.super }} DNA Matching Result
 {% endblock %}
 
-{% block content-hero %}
+{% block content %}
     <h3>Changes Between Sample and {{ reference_name }} Reference</h3>
-    
-    <div class="changes">
-      <div class="well">
+
+    <br />
+    <div class="card">
+      <div class="card-block">
+        <p class="card-text">
         {% if changes %}
           {% for junk, idx, ref, sample in changes %}
-            <ul class="unstyled">
+            <ul class="list-unstyled">
               <li>{{ idx }}: {% highlight_changes ref sample %}
             </ul>
           {% endfor %}
         {% else %}
           None
         {% endif %}
+        </p>
       </div>
     </div>
-{% endblock %}
 
-{% block content %}
-{% comment %}
-    <h3>Complete Comparison Printout</h3>
-      <pre class="printout">
-          {% for diff in diffs %}
-            {{ diff }}
-          {% endfor %}
-      </pre >
-{% endcomment %}
+    <br />
 
-   <div class="form-actions">
-       <a href="{% url 'dna_comparison_for_print' %}" class="btn btn-large btn-primary">Show version for print</a>
-       <a href="{% url 'match_dna_sample' %}" class="btn btn-large pull-right">Start Over</a>
+   <div>
+       <a href="{% url 'dna_comparison_for_print' %}" class="btn btn-primary">Show version for print</a>
+       <a href="{% url 'match_dna_sample' %}" class="btn btn-warning">Start Over</a>
    </div>
 
 {% endblock %}

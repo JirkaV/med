@@ -1,39 +1,22 @@
-{% comment %}
-  This snippet displays form fields in order defined in form definition
-  (typically forms.py) and all necessary class atttibutes.
-  It exists to avoid retyping of the same code for every form.
-  It should be usable just by including this piece of code in the template
-  to display and process form:
-  
-  <form action="{% url *FORM_URL* %}" method="post">{% csrf_token %}
-    {% include form_snippet.html %}
-    <div class="form-actions">
-      <input type="submit" class="btn btn-large btn-primary" value="*SUBMIT_BUTTON_TEXT*" />
-    </div>
-  </form>
-
-  If forms need further customization, use this piece as a template for
-  custom form fields and modify accordingly
-{% endcomment %}
-
+{% load widget_tweaks %}
 {% for error in form.non_field_errors %}
-  <div class="alert alert-error">{{ error }}</div>
+  <p class="text-danger">{{ error }}</p>
 {% endfor %}
 
 {% for field in form %}
   {% if not field.is_hidden %}
-    <div class="control-group{% if field.errors %} error{% endif %}" id="control-group-{{ field.name }}">
-      <label for="{{ field.id_for_label }}" class="control-label{% if not field.field.required %} muted{% endif %}">{{ field.label }}</label>
+    <div class="form-group{% if field.errors %} has-danger{% endif %}">
+      <label for="{{ field.id_for_label }}" class="{% if not field.field.required %} text-muted{% endif %}">{{ field.label }}</label>
       <div class="controls">
         <div class="input">
-          {{ field }}
+          {% render_field field class+="form-control" %}
           <span class="help-inline">
             {% if field.errors %}
               {% for error in field.errors %}
-                {{ error }}
+                <div class="form-control-feedback">{{ error }}</div>
               {% endfor %}
             {% else %}
-              {{ field.help_text }}
+              <small class="form-text text-muted">{{ field.help_text|safe }}</small>
             {% endif %}
           </span>
         </div>

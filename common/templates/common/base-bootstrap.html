@@ -1,41 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
+  <head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="msapplication-config" content="none" /> {# prevent MSIE from requesting "browserconfig.xml" and triggering login #}
+
+    <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico" />
+
+    {# TODO - use minified CSS files #}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css" >
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/custom.css" >
+
     <title>Medical Apps | {% block title %}Title{% endblock %}</title>
 
-    <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 10px;
-      }
-    </style>
-  
     {% block head %}
     {% endblock %}
 
   </head>
 
   <body>
-    <div class="container">
-
-      {% if messages %}
-        {% for message in messages %}
-          <div class="alert{% if message.tags %} alert-{{ message.tags|lower }}{% endif %}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-
-      <div class="hero-unit">
-        {% block content-hero %}
-        {% endblock %}
-      </div>
-
+    <nav class="navbar navbar-toggleable-sm navbar-inverse bg-inverse mb-4">
+      <a class="navbar-brand" href="#">Medical Apps</a>
       <div>
-        {% block content %}
+        {% block navbar %}
         {% endblock %}
       </div>
+    </nav>
 
+    <div class="container">
+      {% block content %}
+      {% endblock %}
     </div>
+
+  <script src="{{ STATIC_URL }}js/jquery.min.js" ></script>
 
   </body>
 </html>

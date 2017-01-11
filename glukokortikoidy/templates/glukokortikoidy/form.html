@@ -44,7 +44,7 @@
 
             // clear any possible "error" states on fields
             $('div[id^="field_"]').each(function() {
-              $(this).removeClass('error');
+              $(this).removeClass('has-danger');
             });
 
             var base_value = base_ratios.get(field_name)
@@ -61,7 +61,7 @@
 
           } else {
             // mark input as invalid, not a number
-            $('div[id="field_'+field_name+'"]').addClass('error');
+            $('div[id="field_'+field_name+'"]').addClass('has-danger');
           };
 
         };
@@ -71,35 +71,29 @@
 
 {% endblock %}
 
-{% block content-hero %}
+{% block content %}
 
-    <h2>Glukokortikoity (mg)</h2>
-    <p />
-    <form action="{% url 'glukokortikoidy_calculator' %}" method="post">{% csrf_token %}
-      {% for error in form.non_field_errors %}
-        <div class="alert-message alert-error span8">
-            {{ error }}
-        </div>
-      {% endfor %}
-      
+  <h2>Glukokortikoidy (mg)</h2>
+  <p />
+  <form>
+    <div class="form-group">
       {% for field in form %}
-        <div class="control-group{% if field.errors %}  error{% endif %}" id="field_{{ field.name }}">
-          <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
-          <div class="controls">
-            <div class="input">
+        <div class="form-group row" id="field_{{ field.name }}">
+          <label class="col-4 col-form-label" for="{{ field.id_for_label }}">{{ field.label }}:</label>
+          <div class="col-8">
              <input type="text"
+                    class="form-control"
                     name="{{ field.name }}"
                     id="{{ field.name }}"
                     onkeyup="recalculate(this.name, this.value)"
                      />
              <span class="help-inline" id="err_{{ field.name }}" ></span>
              {% if field.errors %}{% for error in field.errors %}<span class="help-inline">{{ error }}</span>{% endfor %}{% endif %}
-            </div>
           </div>
           </label>
         </div>
       {% endfor %}
-      
-    </form>
+    </div>
+  </form>
 
 {% endblock %}

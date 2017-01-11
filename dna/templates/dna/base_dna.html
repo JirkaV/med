@@ -8,11 +8,19 @@
     {{ block.super }} > DNA Sample Matching
 {% endblock %}
 
-{% block content-hero %}
-    {{ block.super }}
+{% block navbar %}
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'match_dna_sample' %}">Reference Matching</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'sequencer' %}">Sequencer</a>
+          </li>
+        </ul>
 {% endblock %}
+
 
 {% block content %}
     {{ block.super }}
 {% endblock %}
-  
+

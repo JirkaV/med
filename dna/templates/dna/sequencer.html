@@ -5,29 +5,51 @@
     {{ block.super }} Sequencer
 {% endblock %}
 
-{% block content-hero %}
+{% block content %}
     <h3>Sequencer</h3>
+    <br />
 
     {% if reference_DNA %}
-      Selected reference DNA: {{ reference_DNA }}
 
-      {% if samples %}
-        Added samples: {{ samples|length }}
+      <div class="row">
+        <div class="col-9">
+            {% if samples %}
+              <h4>Samples: {{ samples|length }}</h4>
+              <p />
 
-        {% for sample in samples %}
-          {{ sample.dna|shorten }}
-        {% endfor %}
-      {% else %}
-        No samples added yet
-      {% endif %}
+              {% for sample in samples %}
+                  <blockquote class="blockquote">
+                    <p class="mb-0">{{ sample.dna|shorten }}</p>
+                  </blockquote>
+              {% endfor %}
 
-      <a href="{% url 'add_to_sequencer' %}" class="btn btn-primary">Add Sample</a>
+            {% else %}
+              No samples added yet
+            {% endif %}
 
-      <a href="{% url 'sequencer_result_for_print' %}" class="btn">Show Results</a>
-      <a href="{% url 'reset_sequencer' %}" class="btn">Start Over</a>
+            <a href="{% url 'add_to_sequencer' %}" class="btn btn-large btn-primary">Add Sample</a>
+        </div>
+
+        <div class="col-3">
+          <div class="card">
+            <div class="card-header">
+              Reference
+            </div>
+            <div class="card-block">
+              <p class="card-text">{{ reference_DNA }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <br />
+    <div>
+      <a href="{% url 'sequencer_result_for_print' %}" class="btn btn-success">Show Results</a>
+      <a href="{% url 'reset_sequencer' %}" class="btn btn-warning">Start Over</a>
+    </div>
 
     {% else %}
-      No reference DNA selected <a href="{% url 'sequencer_select_reference' %}" class="btn btn-large">Select</a>
+      No reference DNA selected <a href="{% url 'sequencer_select_reference' %}" class="btn btn-large btn-primary">Select</a>
     {% endif %}
 
 {% endblock %}
