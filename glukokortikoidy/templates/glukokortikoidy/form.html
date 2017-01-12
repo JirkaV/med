@@ -44,7 +44,10 @@
 
             // clear any possible "error" states on fields
             $('div[id^="field_"]').each(function() {
-              $(this).removeClass('has-danger');
+              $(this).removeClass('has-warning');
+            });
+            $('input').each(function() {
+              $(this).removeClass('form-control-warning');
             });
 
             var base_value = base_ratios.get(field_name)
@@ -61,7 +64,8 @@
 
           } else {
             // mark input as invalid, not a number
-            $('div[id="field_'+field_name+'"]').addClass('has-danger');
+            $('div[id="field_'+field_name+'"]').addClass('has-warning');
+            $('input[id="'+field_name+'"]').addClass('form-control-warning');  // should happen automagically, but does not
           };
 
         };

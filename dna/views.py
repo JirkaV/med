@@ -63,6 +63,8 @@ def sequencer(request):
 
 def reset_sequencer(request):
     '''reset sequencer data'''
+    if request.method != 'POST':
+        return redirect('sequencer')
     request.session['sequencer_reference'] = ''
     request.session['samples_data'] = []
     return redirect('sequencer')
