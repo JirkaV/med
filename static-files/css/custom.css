@@ -1,5 +1,11 @@
-.printout {
-  padding: 0px;
-  font-size: 11px;
-  line-height: 12px;
+.plain {
+  padding: 0 3px 2px;
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  display: block;
+  font-size: 12px;
+  line-height: 10px;
+  word-break: break-all;
+  word-wrap: break-word;
+  white-space: pre;
+  white-space: pre-wrap;
 }

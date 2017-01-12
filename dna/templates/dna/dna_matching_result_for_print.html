@@ -1,25 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>DNA Sample Matching - Print Versions</title>
-    <style type="text/css">
-.plain {
-  padding: 0 3px 2px;
-  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
-  display: block;
-  font-size: 12px;
-  line-height: 10px;
-  word-break: break-all;
-  word-wrap: break-word;
-  white-space: pre;
-  white-space: pre-wrap;
-}
-    </style>
+{% extends "dna/base_dna.html" %}
 
-  </head>
+{% block title %}
+    {{ block.super }} | Sample Matching - Print Version
+{% endblock %}
 
-  <body class="plain">
+{% block content %}
+<div class="row">
+  <div class="col-md-3 push-9">
+    <a class="btn btn-warning hidden-print" href="{% url 'match_dna_sample' %}">Start Over</a>
+  </div>
+<div>
+
+<div class="plain">
 Changes Between Sample and {{ reference_name }} Reference:
 {% if session_error %}Unable to find data in the system, please enter the sample data again.{% else %}
 {% if changes %}{% for junk, idx, ref, sample in changes %}
@@ -36,5 +28,6 @@ Complete Comparison Printout
 Sample compared to reference {{ reference_name }} on {{ timestamp_string }}
 {% endif %}
 </pre>
-  </body>
-</html>
+
+</div>
+{% endblock %}

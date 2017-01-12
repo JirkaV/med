@@ -123,9 +123,7 @@ def sequencer_result_for_print(request):
                            add_index_numbers=True,
                            separator_line=True)
 
-#    return render(request, 'dna/sequencer_result.html')
-
-    return render(request, 'dna/dna_matching_result_for_print.html',
+    return render(request, 'dna/sequencer_result.html',
                            {'reference_name': reference_model.name,
                             'rows': rows})
 
