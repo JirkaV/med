@@ -9,3 +9,9 @@
   white-space: pre;
   white-space: pre-wrap;
 }
+
+.btn-mini {
+  padding: 0.15rem 0.6rem;
+  font-size: 0.875rem;
+  border-radius: 0.2rem;
+}

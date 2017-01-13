@@ -5,13 +5,14 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="col-md-3 push-9">
+<div class="row-fluid">
+  <div class="col-3 push-9">
     <a class="btn btn-warning hidden-print" href="{% url 'match_dna_sample' %}">Start Over</a>
   </div>
 <div>
 
-<div class="plain">
+<div class="row-fluid plain">
+  <div class="col-12">
 Changes Between Sample and {{ reference_name }} Reference:
 {% if session_error %}Unable to find data in the system, please enter the sample data again.{% else %}
 {% if changes %}{% for junk, idx, ref, sample in changes %}
@@ -27,7 +28,7 @@ Complete Comparison Printout
 
 Sample compared to reference {{ reference_name }} on {{ timestamp_string }}
 {% endif %}
-</pre>
+</div>
 
 </div>
 {% endblock %}

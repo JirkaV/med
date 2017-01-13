@@ -1,8 +1,12 @@
-from .utils import get_best_offset as gbo
-from .utils import get_triplets
-from .utils import align_samples, get_output_rows
-from .utils import prepare_sample_for_display
-from .utils import prepare_sequencer_data_for_display as psdd
+import pytest
+from django.test import Client
+from .utils import (get_best_offset as gbo,
+                    get_triplets,
+                    align_samples, get_output_rows,
+                    get_differences_row as gdr,
+                    convert_samples_to_row as cstr,
+                    prepare_output_rows as por)
+from .views import sequencer_delete_sample
 
 TEST_DNA = 'AAAACCCCTTTTGGGG'
 PRIMER1 = 'AACC'
@@ -93,7 +97,7 @@ def test_samples_aligning():
                                    [{'dna': 'C',         'offset': 7}]]
 
 def test_get_rows():
-    '''test the get_rows() function for preparing output lines'''
+    '''test the function for preparing output lines'''
     assert get_output_rows(['']) == []
     assert get_output_rows(['A']) == ['A']
     assert get_output_rows(['A'*160]) == ['A'*80, 'A'*80]
@@ -136,30 +140,103 @@ def test_get_rows():
     assert (get_output_rows(['A'*3, 'C'*3, 'G'*3, 'T'*3], width=1) ==
             ['A', 'C', 'G', 'T', 'A', 'C', 'G', 'T', 'A', 'C', 'G', 'T'])
 
-def test_prepare_sample_for_display():
-    '''test that the prepare_sample_for_display() works as expected'''
-    assert prepare_sample_for_display('', '', 0) == ['', '', '']
-    assert (prepare_sample_for_display('A', 'A', 0) ==
-            ['A', 'A', ' '])
-    assert (prepare_sample_for_display('AAA', 'A', 0) ==
-            ['AAA', 'A  ', '   '])
-    assert (prepare_sample_for_display('AAA', 'C', 0) ==
-            ['AAA', 'C  ', '*  '])
-    reference = 'AAACCCAAA'
-    assert (prepare_sample_for_display(reference, 'CCC', 3) ==
-            ['AAACCCAAA', '   CCC   ', '         '])
-    assert (prepare_sample_for_display(reference, 'CAC', 3) ==
-            ['AAACCCAAA', '   CAC   ', '    *    '])
-    assert (prepare_sample_for_display(reference, 'CXC', 3) ==
-            ['AAACCCAAA', '   CXC   ', '    :    '])
+def test_get_differences_row():
+    '''test getting row outlining differences to reference'''
+    assert gdr('', '') == ''
+    assert gdr('A', ' ') == ' '
+    assert gdr('A', 'A') == ' '
+    assert gdr('A', 'T') == '*'
+    assert gdr('A', 'X') == ':'  # X is any of AGCT
+    assert gdr('AAA', ' A ') == '   '
+    assert gdr('AAA', ' C ') == ' * '
+    assert gdr('AAA', ' X ') == ' : '
+    assert gdr('AAAAA', ' C X ') == ' * : '
 
-def test_prepare_sequencer_data_for_display():
-    '''test that sequencer data can be preprocessed for final display'''
-    assert psdd('', [[]]) == ['', '']
-    assert psdd('A', [[{'dna': 'A', 'offset': 0}]]) == ['A', 'A']
-    assert psdd('AACGT', [[{'dna': 'C', 'offset': 2}]]) == ['AACGT', '  C  ']
-    assert psdd('AACGT', [[{'dna': 'C', 'offset': 2},
-                           {'dna': 'G', 'offset': 3}]]) == ['AACGT', '  CG ']
-    assert psdd('AACGT', [[{'dna': 'CG', 'offset': 2},
-                           {'dna': 'T', 'offset': 4}],
-                           [{'dna': 'GT', 'offset': 3}]]) == ['AACGT', '  CGT', '   GT']
+# def test_prepare_sample_for_display():
+#     '''test that the prepare_sample_for_display() works as expected'''
+#     assert prepare_sample_for_display('', '', 0) == ['', '', '']
+#     assert (prepare_sample_for_display('A', 'A', 0) ==
+#             ['A', 'A', ' '])
+#     assert (prepare_sample_for_display('AAA', 'A', 0) ==
+#             ['AAA', 'A  ', '   '])
+#     assert (prepare_sample_for_display('AAA', 'C', 0) ==
+#             ['AAA', 'C  ', '*  '])
+#     reference = 'AAACCCAAA'
+#     assert (prepare_sample_for_display(reference, 'CCC', 3) ==
+#             ['AAACCCAAA', '   CCC   ', '         '])
+#     assert (prepare_sample_for_display(reference, 'CAC', 3) ==
+#             ['AAACCCAAA', '   CAC   ', '    *    '])
+#     assert (prepare_sample_for_display(reference, 'CXC', 3) ==
+#             ['AAACCCAAA', '   CXC   ', '    :    '])
+#
+# def test_prepare_sequencer_data_for_display():
+#     '''test that sequencer data can be preprocessed for final display'''
+#     assert psdd('', [[]]) == ['', '']
+#     assert psdd('A', [[{'dna': 'A', 'offset': 0}]]) == ['A', 'A']
+#     assert psdd('AACGT', [[{'dna': 'C', 'offset': 2}]]) == ['AACGT', '  C  ']
+#     assert psdd('AACGT', [[{'dna': 'C', 'offset': 2},
+#                            {'dna': 'G', 'offset': 3}]]) == ['AACGT', '  CG ']
+#     assert psdd('AACGT', [[{'dna': 'CG', 'offset': 2},
+#                            {'dna': 'T', 'offset': 4}],
+#                            [{'dna': 'GT', 'offset': 3}]]) == ['AACGT', '  CGT', '   GT']
+
+def test_convert_samples_to_row():
+    '''test that samples as dictionaries are correctly converted to strings'''
+    assert cstr([], 0) == ''
+    assert cstr([{'dna': 'A', 'offset': 0}], 1) == 'A'
+    assert cstr([{'dna': 'A', 'offset': 0}], 2) == 'A '
+    assert cstr([{'dna': 'A', 'offset': 1}], 2) == ' A'
+    assert cstr([{'dna': 'C', 'offset': 2}], 5) == '  C  '
+    assert cstr([{'dna': 'C', 'offset': 2},
+                 {'dna': 'G', 'offset': 3}], 5) == '  CG '
+    assert cstr([{'dna': 'CG', 'offset': 2},
+                 {'dna': 'T', 'offset': 4}], 8) == '  CGT   '
+    assert cstr([{'dna': 'CG', 'offset': 2},
+                 {'dna': 'T', 'offset': 6}], 8) == '  CG  T '
+
+@pytest.mark.django_db
+def test_deleting_sample():
+    '''test deleting sample from sequencer'''
+    c = Client()
+    # add some fake data to session
+    samples_data = [{'dna': 'A', 'offset': 1},
+                    {'dna': 'G', 'offset': 2},
+                    {'dna': 'C', 'offset': 3},
+                    {'dna': 'T', 'offset': 4}]
+    sess = c.session  # can't assign directly to c.session, that does not work
+    sess['sequencer_reference'] = ''
+    sess['samples_data'] = samples_data
+    sess.save()
+
+    resp = c.get('/dna/sequencer/delete/1/')
+    assert c.session['samples_data'] == samples_data  # it was a GET request
+
+    resp = c.post('/dna/sequencer/delete/99/')  
+    assert c.session['samples_data'] == samples_data  # wrong index number
+
+    resp = c.post('/dna/sequencer/delete/1/')
+    assert c.session['samples_data'] ==  [{'dna': 'G', 'offset': 2},
+                                          {'dna': 'C', 'offset': 3},
+                                          {'dna': 'T', 'offset': 4}]
+
+    resp = c.post('/dna/sequencer/delete/3/')
+    assert c.session['samples_data'] ==  [{'dna': 'G', 'offset': 2},
+                                          {'dna': 'C', 'offset': 3}]
+
+def test_prepare_output_rows():
+    '''test the prepare_output_rows utility function'''
+    assert por('', []) == ['']
+    assert por('', [{'dna': '', 'offset': 0}]) == ['', '', '']
+    assert por('A', [{'dna': 'A', 'offset': 0}]) == ['A', 'A', ' ']
+    assert por('AAA', [{'dna': 'A', 'offset': 0}]) == ['AAA', 'A  ', '   ']
+    assert por('AAA', [{'dna': 'C', 'offset': 0}]) == ['AAA', 'C  ', '*  ']
+
+    assert por('AAACCCAAA', [{'dna': 'CCC', 'offset': 3}]) == ['AAACCCAAA', '   CCC   ', '         ']
+    assert por('AAACCCAAA', [{'dna': 'CAC', 'offset': 3}]) == ['AAACCCAAA', '   CAC   ', '    *    ']
+    assert por('AAACCCAAA', [{'dna': 'CXC', 'offset': 3}]) == ['AAACCCAAA', '   CXC   ', '    :    ']
+    assert por('AAACCCAAA', [{'dna': 'CXC', 'offset': 3},
+                             {'dna': 'XCT', 'offset': 4} ]) == ['AAACCCAAA',
+                                                                '   CXC   ',
+                                                                '    :    ',
+                                                                '    XCT  ',
+                                                                '    : *  ']

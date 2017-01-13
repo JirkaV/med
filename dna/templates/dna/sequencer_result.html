@@ -5,20 +5,19 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="col-md-3 push-9">
+<div class="row-fluid">
+  <div class="col-3 push-9">
     <a class="btn btn-primary hidden-print" href="{% url 'sequencer' %}">Back</a>
   </div>
 <div>
-
-<div class="plain">
+<div class="row-fluid plain">
+  <div class="col-12">
 Samples aligned to reference DNA {{ reference_name }}
 {% for row in rows %}
 {{ row }}
 {% endfor %}
 
 Printed on {{ timestamp_string }}
-</pre>
-
+  </div>
 </div>
 {% endblock %}

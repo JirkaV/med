@@ -3,9 +3,8 @@ from django.template.defaultfilters import date as template_date
 from django.utils.timezone import now
 from .models import ReferenceDNA
 from .forms import DNASampleForm, PlainDNASampleForm, ReferenceSelectForm
-from .utils import get_best_offset, get_triplets, align_samples
-from .utils import get_output_rows, prepare_sample_for_display
-from .utils import prepare_sequencer_data_for_display
+from .utils import get_best_offset, get_triplets
+from .utils import prepare_output_rows, get_output_rows
 
 def match_dna_sample(request):
     if request.method == 'POST':
@@ -46,8 +45,9 @@ def dna_comparison_for_print(request):
     except KeyError:
         return render(request, 'dna/dna_matching_result_for_print.html',
                               {'session_error': True})
-    rows = get_output_rows(prepare_sample_for_display(reference_dna,
-                                                      dna_sample, best_offset),
+    rows = get_output_rows(prepare_output_rows(reference_dna,
+                                               [{'dna': dna_sample,
+                                                 'offset': best_offset}]),
                            add_index_numbers=True)
     return render(request, 'dna/dna_matching_result_for_print.html',
                            {'reference_name': reference_name,
@@ -118,10 +118,8 @@ def sequencer_result_for_print(request):
     reference_model = get_object_or_404(ReferenceDNA,
                                         name=request.session.get('sequencer_reference'))
 
-    aligned_samples = align_samples(request.session['samples_data'])
-
-    rows = get_output_rows(prepare_sequencer_data_for_display(reference_model.dna,
-                                                              aligned_samples),
+    rows = get_output_rows(prepare_output_rows(reference_model.dna,
+                                               request.session['samples_data']),
                            add_index_numbers=True,
                            separator_line=True)
 
@@ -129,3 +127,16 @@ def sequencer_result_for_print(request):
                            {'reference_name': reference_model.name,
                             'rows': rows})
 
+def sequencer_delete_sample(request, sample_id):
+    '''deletes a specific sample from sequencer'''
+    to_delete = int(sample_id)
+    if request.method != 'POST':
+        return redirect('sequencer')
+    samples_data = request.session['samples_data']
+    res = []
+    for i, sample in enumerate(samples_data, start=1):
+        if i == to_delete:
+            continue  # delete this one
+        res.append(sample)
+    request.session['samples_data'] = res
+    return redirect('sequencer')
