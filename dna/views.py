@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.defaultfilters import date as template_date
 from django.utils.timezone import now
+from common.utils import absolute_redirect
 from .models import ReferenceDNA
 from .forms import DNASampleForm, PlainDNASampleForm, ReferenceSelectForm
 from .utils import get_best_offset, get_triplets
@@ -64,10 +65,10 @@ def sequencer(request):
 def reset_sequencer(request):
     '''reset sequencer data'''
     if request.method != 'POST':
-        return redirect('sequencer')
+        return absolute_redirect('sequencer')
     request.session['sequencer_reference'] = ''
     request.session['samples_data'] = []
-    return redirect('sequencer')
+    return absolute_redirect('sequencer')
 
 def sequencer_select_reference(request):
     '''show main sequencer page'''
@@ -76,7 +77,7 @@ def sequencer_select_reference(request):
         if form.is_valid():
             reference_dna_model = form.cleaned_data['reference_dna']
             request.session['sequencer_reference'] = reference_dna_model.name
-            return redirect('sequencer')
+            return absolute_redirect('sequencer')
     else:
         form = ReferenceSelectForm()
 
@@ -86,7 +87,7 @@ def add_to_sequencer(request):
     '''add new data to sequencer'''
     # safety check first
     if not request.session.get('sequencer_reference', ''):
-        return redirect('sequencer')
+        return absolute_redirect('sequencer')
 
     if request.method == 'POST':
         form = PlainDNASampleForm(request.POST)
@@ -103,7 +104,7 @@ def add_to_sequencer(request):
                 tmp = []
             tmp.append(sample)
             request.session['samples_data'] = tmp
-            return redirect('sequencer')
+            return absolute_redirect('sequencer')
     else:
         form = PlainDNASampleForm()
 
@@ -113,7 +114,7 @@ def sequencer_result_for_print(request):
     '''show the sequencer result page'''
     if not (request.session.get('sequencer_reference', '')
             and request.session.get('samples_data', [])):
-        return redirect('sequencer')
+        return absolute_redirect('sequencer')
 
     reference_model = get_object_or_404(ReferenceDNA,
                                         name=request.session.get('sequencer_reference'))
@@ -131,7 +132,7 @@ def sequencer_delete_sample(request, sample_id):
     '''deletes a specific sample from sequencer'''
     to_delete = int(sample_id)
     if request.method != 'POST':
-        return redirect('sequencer')
+        return absolute_redirect('sequencer')
     samples_data = request.session['samples_data']
     res = []
     for i, sample in enumerate(samples_data, start=1):
@@ -139,4 +140,4 @@ def sequencer_delete_sample(request, sample_id):
             continue  # delete this one
         res.append(sample)
     request.session['samples_data'] = res
-    return redirect('sequencer')
+    return absolute_redirect('sequencer')
