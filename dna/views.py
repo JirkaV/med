@@ -1,3 +1,4 @@
+from __future__ import division  # for compatibility with Python 2.7 and pypy
 from django.shortcuts import render
 from django.template.defaultfilters import date as template_date
 from django.utils.timezone import now
