@@ -7,6 +7,7 @@ from .utils import (get_best_offset as gbo,
                     convert_samples_to_row as cstr,
                     prepare_output_rows as por)
 from .views import sequencer_delete_sample
+from .forms import ReferenceInputForm, PlainDNASampleForm
 
 TEST_DNA = 'AAAACCCCTTTTGGGG'
 PRIMER1 = 'AACC'
@@ -37,16 +38,6 @@ def test_offset_with_variants():
     REFERENCE = 'AAACCCCCCGGG'
     assert gbo(REFERENCE, 'Y') == 3  # Y -> C
     assert gbo(REFERENCE, 'K') == 9  # K -> G
-
-# import time
-# from .data import ABL_GEN_REFERENCE
-# test_data = 'CAAGGTTTTCCTTCTCGCTGGACCCAGTGAAAATGACCCCAACCTTTTCGTTGCACTGTATGAAAAAGTGGCCAGTGGAGATAACACTCTAAGCATAACTAAAGGTGTTTTGCTCCGGGTCTTAGGCTATAATCACAATGGGGAATGGTGTGAAGCCCAAACCAAAAATGGCCAAGGCTCCCTCCCAAGCAACTACATCACGCCAGTCAACAGTCTGGAGAAACACTCCTGGTACCATGGGCCTGTGTCCCGCAATGCCGCTGAGTATCCGCTGAGCAGCAGGATCAATGGCAGCTTCTTGGTGCGTGAGAGTGAGAGCAGTCCTAGCCAGAGGTCCATCTCGCTGAGATACGAAGGGAGGGTGTACCATTACAGGATCCACACTGCTTCTGATGGCAAGCTCTACGTCTCCTCCGAGAGCCGCTTCAACACCCTGGCCGAGTTGGTTCATCATCATTCAACGGTGGCCGACGGGCTCATCACCACGCTCCAATATCCAGCCCCAAAGCGCAACAAGCCCACTGTCTATGGTGTGTCCCCCAACTACGACAAGTGGGAGATGGAACGCACGGACATCACCATGAAGCACAAGCTGGGCGGGGGCCAGTACGGGGAGGTGTACGAGGGCGTGTGGAAGAAATACAGCCTGACGGTGGCCGTGAAGACCTTGAAGGAGGACACCACGGAGGTGGAAGAGTTCTTGAAAGAAGCTGCAGTCATGAAAGAGATCAAACACCCTAACCTAGTGCAGCTCCTTGGGGTCTGCACCCGGGAGCCCCCGTTCTATATCATCACTGAGTTCCTGACCTACGGGAACCTCCTGGACTACCTGAGGGAGTGCAACCGGCAGGAGGTGAACGCCGTGGTGCTGCTGTACATGGCCACTCAGATCTCGTCAGCCATGGAGTACCTAGAGAAGAAAAACTTCATCCACAGAGATCTTGCTGCCCGAAACTGCCTGGTAGGGGAGAACCACTTGGTGAAGGTAGCTGATTTTGGCCTGAGCAGGTTGATGACAGGGGACACCTACACAGCCCATGCTGGAGCCAAGTTCCCCATCAAATGGACTGCACCCGAGAGCCTGGCCTACAACAAGTTCTCCATCAAGTCCGACGTCTGGGCATTTGGAGTATTGCTTTGGGAAATTGCTACCTATGGCATGTCCCCTTACCCGGGAATTGACCGTTCCCAGGTGTATGAGCTGCTAGAGAAGGACTACCGCATGAAGCGCCCAGAAGGCTGCCCAGAGAAGGTCTATGAACTCATGCGAGCATGTTGGCAGTGGAATCCCTCTGACCGGCCCTCCTTTGCTGAAATCCACCAAGCCTTTGAAACAATGTTCCAGGAATCCAGTATCTCAGACGAAGTGGAAAAGGAGCTGGGGAAACAAGGCGTCCGTGGGGCTGTGACTACCTTGCTGCAGGCCCCAGAGCTGCCCACCAAGACGAGGACCTCCAGGAGAGCTGCAGAGCACAGAGACACCACTGACGTGCCTGAGATGCCTCACTCCAAGGGCCAGGGAGAGAGCGATCCTCTGGACCATGAGCCTGCCGTGTCTCCATTGCTCCCTCGAAAAGAGCGAGGTCCCCCGGAGGGCGGCCTGAATGAAGATGAGCGCCTTCTCCCCAAAGACAAAAAGACCAACTTGTTCAGCGCCTTGATCAAGAAGAAGAAGAAGACAGCCCCAACCCCTCCCAAACGCAGCAGCTCCTTCCGGGAGATGGACGGCCAGCCGGAGCGCAGAGGGGCCGGCGAGGAAGAGGGCCGAGACATCAGCAACGGGGCACTGGCTTTCACCCCCTTGGACACAGCTGACCCAGCCAAGTCCCCAAAGCCCAGCAATGGGGCTGGGGTCCCCAATGGAGCCCTCCGGGAGTCCGGGGGCTCAGGCTTCCGGTCTCCCCACCTGTGGAAGAAGTCCAGCACGCTGACCAGCAGCCGCCTAGCCACCGGCGAGGAGGAGGGCGGTGGCAGCTCCAGCAAGCGCTTCCTGCGCTCTTGCTCCGTCTCCTGCGTTCCCCATGGGGCCAAGGACACGGAGTGGAGGTCAGTCACGCTGCCTCGGGACTTGCAGTCCACGGGAAGACAGTTTGACTCGTCCACATTTGGAGGGCACAAAAGTGAGAAGCCGGCTCTGCCTCGGAAGAGGGCAGGGGAGAACAGGTCTGACCAGGTGACCCGAGGCACAGTAACGCCTCCCCCCAGGCTGGTGAAAAAGAATGAGGAAGCTGCTGATGAGGTCTTCAAAGACATCATGGAGTCCAGCCCGGGCTCCAGCCCGCCCAACCTGACTCCAAAACCCCTCCGGCGGCAGGTCACCGTGGCCCCTGCCTCGGGCCTCCCCCACAAGGAAGAAGCCTGGAAAGGCAGTGCCTTAGGGACCCCTGCTGCAGCTGAGCCAGTGACCCCCACCAGCAAAGCAGGCTCAGGTGCACCAAGGGGCACCAGCAAGGGCCCCGCCGAGGAGTCCAGAGTGAGGAGGCACAAGCACTCCTCTGAGTCGCCAGGGAGGGACAAGGGGAAATTGTCCAAGCTCAAACCTGCCCCGCCGCCCCCACCAGCAGCCTCTGCAGGGAAGGCTGGAGGAAAGCCCTCGCAGAGGCCCGGCCAGGAGGCTGCCGGGGAGGCAGTCTTGGGCGCAAAGACAAAAGCCACGAGTCTGGTTGATGCTGTGAACAGTGACGCTGCCAAGCCCAGCCAGCCGGCAGAGGGCCTCAAAAAGCCCGTGCTCCCGGCCACTCCAAAGCCACACCCCGCCAAGCCGTCGGGGACCCCCATCAGCCCAGCCCCCGTTCCCCTTTCCACGTTGCCATCAGCATCCTCGGCCTTGGCAGGGGACCAGCCGTCTTCCACTGCCTTCATCCCTCTCATATCAACCCGAGTGTCTCTTCGGTTTTAAAGCCAGCCTCCAGAGCGGGCCAGCGGCGCCATCACCAAGGGCGT'
-# def test_speed():
-#     start_time = time.time()
-#     print(gbo(ABL_GEN_REFERENCE, test_data))
-#     print('{:.3f}'.format(time.time() - start_time))
-#     assert False
-#
 
 def test_samples_aligning():
     '''test aligning samples to least number of lines'''
@@ -152,34 +143,6 @@ def test_get_differences_row():
     assert gdr('AAA', ' X ') == ' : '
     assert gdr('AAAAA', ' C X ') == ' * : '
 
-# def test_prepare_sample_for_display():
-#     '''test that the prepare_sample_for_display() works as expected'''
-#     assert prepare_sample_for_display('', '', 0) == ['', '', '']
-#     assert (prepare_sample_for_display('A', 'A', 0) ==
-#             ['A', 'A', ' '])
-#     assert (prepare_sample_for_display('AAA', 'A', 0) ==
-#             ['AAA', 'A  ', '   '])
-#     assert (prepare_sample_for_display('AAA', 'C', 0) ==
-#             ['AAA', 'C  ', '*  '])
-#     reference = 'AAACCCAAA'
-#     assert (prepare_sample_for_display(reference, 'CCC', 3) ==
-#             ['AAACCCAAA', '   CCC   ', '         '])
-#     assert (prepare_sample_for_display(reference, 'CAC', 3) ==
-#             ['AAACCCAAA', '   CAC   ', '    *    '])
-#     assert (prepare_sample_for_display(reference, 'CXC', 3) ==
-#             ['AAACCCAAA', '   CXC   ', '    :    '])
-#
-# def test_prepare_sequencer_data_for_display():
-#     '''test that sequencer data can be preprocessed for final display'''
-#     assert psdd('', [[]]) == ['', '']
-#     assert psdd('A', [[{'dna': 'A', 'offset': 0}]]) == ['A', 'A']
-#     assert psdd('AACGT', [[{'dna': 'C', 'offset': 2}]]) == ['AACGT', '  C  ']
-#     assert psdd('AACGT', [[{'dna': 'C', 'offset': 2},
-#                            {'dna': 'G', 'offset': 3}]]) == ['AACGT', '  CG ']
-#     assert psdd('AACGT', [[{'dna': 'CG', 'offset': 2},
-#                            {'dna': 'T', 'offset': 4}],
-#                            [{'dna': 'GT', 'offset': 3}]]) == ['AACGT', '  CGT', '   GT']
-
 def test_convert_samples_to_row():
     '''test that samples as dictionaries are correctly converted to strings'''
     assert cstr([], 0) == ''
@@ -208,18 +171,18 @@ def test_deleting_sample():
     sess['samples_data'] = samples_data
     sess.save()
 
-    resp = c.get('/dna/sequencer/delete/1/')
+    resp = c.get('/dna/sequencer/sample/delete/1/')
     assert c.session['samples_data'] == samples_data  # it was a GET request
 
-    resp = c.post('/dna/sequencer/delete/99/')  
+    resp = c.post('/dna/sequencer/sample/delete/99/')
     assert c.session['samples_data'] == samples_data  # wrong index number
 
-    resp = c.post('/dna/sequencer/delete/1/')
+    resp = c.post('/dna/sequencer/sample/delete/1/')
     assert c.session['samples_data'] ==  [{'dna': 'G', 'offset': 2},
                                           {'dna': 'C', 'offset': 3},
                                           {'dna': 'T', 'offset': 4}]
 
-    resp = c.post('/dna/sequencer/delete/3/')
+    resp = c.post('/dna/sequencer/sample/delete/3/')
     assert c.session['samples_data'] ==  [{'dna': 'G', 'offset': 2},
                                           {'dna': 'C', 'offset': 3}]
 
@@ -240,3 +203,55 @@ def test_prepare_output_rows():
                                                                 '    :    ',
                                                                 '    XCT  ',
                                                                 '    : *  ']
+
+def test_forms():
+    '''test DNA input forms'''
+    f = PlainDNASampleForm({'dna_sample': ''})
+    assert not f.is_valid()
+    f = PlainDNASampleForm({'dna_sample': 'A'})
+    assert f.is_valid()
+    f = PlainDNASampleForm({'dna_sample': 'AGCT'})
+    assert f.is_valid()
+    f = PlainDNASampleForm({'dna_sample': 'MRWSYKVHDBXN'})
+    assert f.is_valid()
+    f = PlainDNASampleForm({'dna_sample': 'E'})  # first letter that can't be in form
+    assert not f.is_valid()
+    f = PlainDNASampleForm({'dna_sample': '1'})
+    assert not f.is_valid()
+    f = PlainDNASampleForm({'dna_sample': '*'})
+    assert not f.is_valid()
+
+    f = ReferenceInputForm({'reference_dna_name': 'test',
+                            'reference_dna_string': ''})
+    assert not f.is_valid()
+    f = ReferenceInputForm({'reference_dna_name': 'test',
+                            'reference_dna_string': 'A'})
+    assert f.is_valid()
+    f = ReferenceInputForm({'reference_dna_name': 'test',
+                            'reference_dna_string': 'AGCT'})
+    assert f.is_valid()
+    f = ReferenceInputForm({'reference_dna_name': 'test',
+                            'reference_dna_string': 'MRWSYKVHDBXN'})
+    assert not f.is_valid()  # can't allow variants
+    f = ReferenceInputForm({'reference_dna_name': 'test',
+                            'reference_dna_string': 'E'})
+    assert not f.is_valid()
+    f = ReferenceInputForm({'reference_dna_name': 'test',
+                            'reference_dna_string': '!'})
+    assert not f.is_valid()
+    f = ReferenceInputForm({'reference_dna_name': 'test',
+                            'reference_dna_string': '*'})
+    assert not f.is_valid()
+
+
+def test_sample_longer_than_reference():
+    f = PlainDNASampleForm({'dna_sample': 'AAAA'})
+    assert f.is_valid()
+    f = PlainDNASampleForm({'dna_sample': 'AAAA'}, reference_length=999)
+    assert f.is_valid()
+    f = PlainDNASampleForm({'dna_sample': 'AAAA'}, reference_length=5)
+    assert f.is_valid()
+    f = PlainDNASampleForm({'dna_sample': 'AAAA'}, reference_length=4)
+    assert f.is_valid()
+    f = PlainDNASampleForm({'dna_sample': 'AAAA'}, reference_length=3)
+    assert not f.is_valid()

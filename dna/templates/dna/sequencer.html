@@ -55,7 +55,7 @@
 
     <br />
     <div>
-      <a href="{% url 'sequencer_result_for_print' %}" class="btn btn-success">Show Results</a>
+      {% if samples %}<a href="{% url 'sequencer_result_for_print' %}" class="btn btn-success">Show Results</a>{% endif %}
       <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#startOver">Start Over</button>
     </div>
 

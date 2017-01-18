@@ -1,0 +1,17 @@
+{% extends "dna/base_dna.html" %}
+
+{% block title %}
+    {{ block.super }} Sequencer | Add One-Off Reference DNA
+{% endblock %}
+
+{% block content %}
+    <h2>Sequencer - Add One-Off Reference DNA</h2>
+
+    <p />
+
+    <form action="{% url 'sequencer_input_reference' %}" method="post">{% csrf_token %}
+      {% include "common/form_snippet.html" %}
+      <input type="submit" class="btn btn-large btn-primary" value="Use as Reference" />
+    </form>
+
+{% endblock %}

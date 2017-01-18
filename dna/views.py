@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.template.defaultfilters import date as template_date
 from django.utils.timezone import now
 from common.utils import absolute_redirect
-from .forms import DNASampleForm, PlainDNASampleForm, ReferenceSelectForm
+from .forms import (DNASampleForm, PlainDNASampleForm,
+                    ReferenceSelectForm, ReferenceInputForm)
 from .utils import get_best_offset, get_triplets
 from .utils import prepare_output_rows, get_output_rows
 
@@ -71,7 +72,7 @@ def reset_sequencer(request):
     return absolute_redirect('sequencer')
 
 def sequencer_select_reference(request):
-    '''show main sequencer page'''
+    '''view for picking an existing reference from the database'''
     if request.method == 'POST':
         form = ReferenceSelectForm(request.POST)
         if form.is_valid():
@@ -81,16 +82,32 @@ def sequencer_select_reference(request):
     else:
         form = ReferenceSelectForm()
 
-    return render(request, 'dna/sequencer_reference_form.html', {'form': form})
+    return render(request, 'dna/sequencer_reference_select_form.html', {'form': form})
+
+def sequencer_input_reference(request):
+    '''view for manual reference input (one-off use, won't be remembered)'''
+    if request.method == 'POST':
+        form = ReferenceInputForm(request.POST)
+        if form.is_valid():
+            request.session['sequencer_reference'] = form.cleaned_data['reference_dna_string']
+            request.session['sequencer_reference_name'] = form.cleaned_data['reference_dna_name']
+            return absolute_redirect('sequencer')
+    else:
+        form = ReferenceInputForm()
+
+    return render(request, 'dna/sequencer_reference_input_form.html', {'form': form})
+
 
 def add_to_sequencer(request):
     '''add new data to sequencer'''
     # safety check first
     if not request.session.get('sequencer_reference', ''):
         return absolute_redirect('sequencer')
+    reference_length = len(request.session['sequencer_reference'])
 
     if request.method == 'POST':
-        form = PlainDNASampleForm(request.POST)
+        form = PlainDNASampleForm(request.POST,
+                                  reference_length=reference_length)
         if form.is_valid():
             dna_sample = form.cleaned_data['dna_sample']
             sample = {'dna': dna_sample,
@@ -104,7 +121,7 @@ def add_to_sequencer(request):
             request.session['samples_data'] = tmp
             return absolute_redirect('sequencer')
     else:
-        form = PlainDNASampleForm()
+        form = PlainDNASampleForm(reference_length=reference_length)
 
     return render(request, 'dna/sequencer_dna_sample_form.html', {'form': form})
 
@@ -126,14 +143,15 @@ def sequencer_result_for_print(request):
 
 def sequencer_delete_sample(request, sample_id):
     '''deletes a specific sample from sequencer'''
-    to_delete = int(sample_id)
     if request.method != 'POST':
         return absolute_redirect('sequencer')
     samples_data = request.session['samples_data']
+    to_delete = int(sample_id)
     res = []
     for i, sample in enumerate(samples_data, start=1):
         if i == to_delete:
             continue  # delete this one
         res.append(sample)
+    print('RES', res)
     request.session['samples_data'] = res
     return absolute_redirect('sequencer')
