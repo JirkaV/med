@@ -4,8 +4,9 @@ from django.utils.timezone import now
 from common.utils import absolute_redirect
 from .forms import (DNASampleForm, PlainDNASampleForm,
                     ReferenceSelectForm, ReferenceInputForm)
-from .utils import get_best_offset, get_triplets
-from .utils import prepare_output_rows, get_output_rows
+from .utils import (get_best_offset, get_triplets,
+                    prepare_output_rows, get_output_rows,
+                    calculate_total_differences)
 
 def match_dna_sample(request):
     if request.method == 'POST':
@@ -131,14 +132,25 @@ def sequencer_result_for_print(request):
             and request.session.get('samples_data', [])):
         return absolute_redirect('sequencer')
 
-    rows = get_output_rows(prepare_output_rows(request.session['sequencer_reference'],
-                                               request.session['samples_data']),
-                           add_index_numbers=True,
-                           separator_line=True)
+    rows = prepare_output_rows(request.session['sequencer_reference'],
+                               request.session['samples_data'])
+    differences_cnt = calculate_total_differences(rows)
+
+    reference_len = len(request.session['sequencer_reference'])
+    try:
+        similarity_ratio = 100 * (reference_len - differences_cnt) / reference_len
+    except ZeroDivisionError:
+        similarity_ratio = 100
+
+    final_output_rows = get_output_rows(rows,
+                                        add_index_numbers=True,
+                                        separator_line=True)
 
     return render(request, 'dna/sequencer_result.html',
                            {'reference_name': request.session['sequencer_reference_name'],
-                            'rows': rows,
+                            'rows': final_output_rows,
+                            'differences_cnt': differences_cnt,
+                            'similarity_ratio': similarity_ratio,
                             'timestamp_string': template_date(now(), 'r')})
 
 def sequencer_delete_sample(request, sample_id):
@@ -152,6 +164,5 @@ def sequencer_delete_sample(request, sample_id):
         if i == to_delete:
             continue  # delete this one
         res.append(sample)
-    print('RES', res)
     request.session['samples_data'] = res
     return absolute_redirect('sequencer')

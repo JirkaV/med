@@ -1,4 +1,4 @@
-from .dna_values import VARIANTS
+from .dna_values import DNA_ELEMENTS, VARIANTS
 
 FILL_CHAR = ' '  # added to sample on left and right to match reference length
 DIFF_CHAR = '*'  # display where sample is different from reference
@@ -103,7 +103,7 @@ def get_differences_row(reference, samples_row):
         if r == s or s == FILL_CHAR:
             res.append(SAME_CHAR)
         else:
-            if s in VARIANTS:
+            if s in VARIANTS and r in VARIANTS[s]:
                 res.append(VARIANT_CHAR)
             else:
                 res.append(DIFF_CHAR)
@@ -166,6 +166,26 @@ def prepare_output_rows(reference, samples):
                     get_differences_row(reference, samples_row_string)])
     return res
 
+def calculate_total_differences(rows_list):
+    '''given the list of rows (expected to be output of prepare_output_rows()
+    returns total number of cases where sample(s) differ from reference.
+    Does not calculate variants (e.g. "X") as a difference.
+    If two samples match against the same section of reference, max one
+    difference is calculated, e.g. max(differences) == len(reference)
+    '''
+    # note - we could calculate this in get_differences_row() but it'd make
+    # the code ugly as we'd have to return differences along the rows
+    # at multiple places. We're not losing much speed in running over output
+    # rows one more time and calculating differences this way
+    diff_offsets = set()
+    for row in rows_list:
+        for i, char in enumerate(row, start=1):  # nearly everything is 1-indexed, use it here too
+            if char in DNA_ELEMENTS:  # also in variants, but we're likely to detect this in the next char
+               break  # not interested in this row, it does not contain differences
+            if char == DIFF_CHAR:
+                diff_offsets.add(i)
+    return len(diff_offsets)
+
 def get_output_rows(list_of_strings,
                     width=80,
                     add_index_numbers=False,
@@ -183,7 +203,7 @@ def get_output_rows(list_of_strings,
             line = curr_string[curr:curr+width]
             if add_index_numbers:
                 if i == 0:  # line that needs index numbers
-                    line = '{:>6} {} {:>6}'.format(curr+1, line, curr+width)
+                    line = '{:>6} {} {:>6}'.format(curr+1, line, curr+len(line))
                 else:
                     line = '{} {} {}'.format(' '*6, line, ' '*6)
             if collapse_empty_lines and not line.strip():
