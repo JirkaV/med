@@ -34,26 +34,35 @@ class StrictDNAField(forms.Field):
         if errors:
             raise ValidationError(errors)
 
-class DNASampleBaseForm(forms.Form):
+class DNASampleForm(forms.Form):
+    '''Form for DNA sample and reference DNA choice'''
+    reference_dna = forms.ModelChoiceField(label='Reference DNA',
+                                           queryset=ReferenceDNA.objects.all(),
+                                           empty_label=None)
+    dna_sample = DNAWithVariantsField(label='',
+                                      widget=forms.widgets.Textarea(
+                                            attrs={'class': 'input-xxlarge'}))
+
+    def clean_dna_sample(self):
+        sample = self.cleaned_data['dna_sample']
+        sample_len = len(sample)
+        reference_len = len(self.cleaned_data['reference_dna'].dna)
+        if sample_len > reference_len:
+            raise ValidationError('Sample is longer than reference!')
+        return sample
+
+class PlainDNASampleForm(forms.Form):
+    '''Plain form displaying a single field for DNA sample'''
     def __init__(self, *args, **kwargs):
         reference_length = kwargs.pop('reference_length', None)
         super().__init__(*args, **kwargs)
         if reference_length is not None:
             self.fields['dna_sample'].validators.append(validators.MaxLengthValidator(reference_length))
-            self.fields['dna_sample'].help_text='Please enter up to {} nucleotides (reference length)'.format(reference_length)
+            self.fields['dna_sample'].help_text = 'Please enter up to {} nucleotides (reference length)'.format(reference_length)
 
     dna_sample = DNAWithVariantsField(label='',
                                       widget=forms.widgets.Textarea(
                                             attrs={'class': 'input-xxlarge'}))
-
-class DNASampleForm(DNASampleBaseForm):
-    '''Form for DNA sample and reference DNA choice'''
-    reference_dna = forms.ModelChoiceField(label='Reference DNA',
-                                           queryset=ReferenceDNA.objects.all(),
-                                           empty_label=None)
-
-class PlainDNASampleForm(DNASampleBaseForm):
-    '''Plain form displaying a single field for DNA sample'''
 
 class ReferenceSelectForm(forms.Form):
     '''Form for selecting reference DNA'''
