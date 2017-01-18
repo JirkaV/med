@@ -10,7 +10,7 @@ class DNAWithVariantsField(forms.Field):
     '''form field for DNA input with possible variants characters'''
     
     def validate(self, value):
-        super().validate(value)
+        super(DNAWithVariantsField, self).validate(value)
         errors = []
         value = value.strip().upper()
         for element in value:
@@ -24,7 +24,7 @@ class StrictDNAField(forms.Field):
     '''form field for strict DNA input, only allowing the classic "AGCT" chars'''
 
     def validate(self, value):
-        super().validate(value)
+        super(StrictDNAField, self).validate(value)
         errors = []
         value = value.strip().upper()
         for element in value:
