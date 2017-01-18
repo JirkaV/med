@@ -1,8 +1,7 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render
 from django.template.defaultfilters import date as template_date
 from django.utils.timezone import now
 from common.utils import absolute_redirect
-from .models import ReferenceDNA
 from .forms import DNASampleForm, PlainDNASampleForm, ReferenceSelectForm
 from .utils import get_best_offset, get_triplets
 from .utils import prepare_output_rows, get_output_rows
@@ -59,7 +58,8 @@ def dna_comparison_for_print(request):
 def sequencer(request):
     '''show main sequencer page'''
     return render(request, 'dna/sequencer.html',
-                  {'reference_DNA': request.session.get('sequencer_reference', ''),
+                  {'reference': request.session.get('sequencer_reference', ''),
+                   'reference_name': request.session.get('sequencer_reference_name', ''),
                    'samples': request.session.get('samples_data', [])})
 
 def reset_sequencer(request):
@@ -75,8 +75,8 @@ def sequencer_select_reference(request):
     if request.method == 'POST':
         form = ReferenceSelectForm(request.POST)
         if form.is_valid():
-            reference_dna_model = form.cleaned_data['reference_dna']
-            request.session['sequencer_reference'] = reference_dna_model.name
+            request.session['sequencer_reference'] = form.cleaned_data['reference_dna'].dna
+            request.session['sequencer_reference_name'] = form.cleaned_data['reference_dna'].name
             return absolute_redirect('sequencer')
     else:
         form = ReferenceSelectForm()
@@ -93,10 +93,8 @@ def add_to_sequencer(request):
         form = PlainDNASampleForm(request.POST)
         if form.is_valid():
             dna_sample = form.cleaned_data['dna_sample']
-            reference_model = get_object_or_404(ReferenceDNA,
-                                                name=request.session.get('sequencer_reference'))
             sample = {'dna': dna_sample,
-                      'offset': get_best_offset(reference_model.dna, dna_sample)}
+                      'offset': get_best_offset(request.session['sequencer_reference'], dna_sample)}
             # appending directly to request.session['samples_data'] does not seem to work as expected
             try:
                 tmp = request.session['samples_data']
@@ -116,17 +114,15 @@ def sequencer_result_for_print(request):
             and request.session.get('samples_data', [])):
         return absolute_redirect('sequencer')
 
-    reference_model = get_object_or_404(ReferenceDNA,
-                                        name=request.session.get('sequencer_reference'))
-
-    rows = get_output_rows(prepare_output_rows(reference_model.dna,
+    rows = get_output_rows(prepare_output_rows(request.session['sequencer_reference'],
                                                request.session['samples_data']),
                            add_index_numbers=True,
                            separator_line=True)
 
     return render(request, 'dna/sequencer_result.html',
-                           {'reference_name': reference_model.name,
-                            'rows': rows})
+                           {'reference_name': request.session['sequencer_reference_name'],
+                            'rows': rows,
+                            'timestamp_string': template_date(now(), 'r')})
 
 def sequencer_delete_sample(request, sample_id):
     '''deletes a specific sample from sequencer'''
