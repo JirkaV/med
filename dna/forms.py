@@ -55,7 +55,7 @@ class PlainDNASampleForm(forms.Form):
     '''Plain form displaying a single field for DNA sample'''
     def __init__(self, *args, **kwargs):
         reference_length = kwargs.pop('reference_length', None)
-        super(PlainDNASampleForm).__init__(*args, **kwargs)
+        super(PlainDNASampleForm, self).__init__(*args, **kwargs)
         if reference_length is not None:
             self.fields['dna_sample'].validators.append(validators.MaxLengthValidator(reference_length))
             self.fields['dna_sample'].help_text = 'Please enter up to {} nucleotides (reference length)'.format(reference_length)
