@@ -1,4 +1,5 @@
-from .dna_values import DNA_ELEMENTS, VARIANTS
+from __future__ import division  # for compatibility with Python 2.7 and pypy
+from .dna_values import VARIANTS
 
 FILL_CHAR = ' '  # added to sample on left and right to match reference length
 DIFF_CHAR = '*'  # display where sample is different from reference
@@ -166,25 +167,27 @@ def prepare_output_rows(reference, samples):
                     get_differences_row(reference, samples_row_string)])
     return res
 
-def calculate_total_differences(rows_list):
-    '''given the list of rows (expected to be output of prepare_output_rows()
-    returns total number of cases where sample(s) differ from reference.
-    Does not calculate variants (e.g. "X") as a difference.
-    If two samples match against the same section of reference, max one
-    difference is calculated, e.g. max(differences) == len(reference)
+def calculate_statistics(diffs_string):
+    '''This will only be used it user provided just one sample to match
+    against reference.
+
+    Using the string outlining differences between sample and reference
+    (e.g. the "  ** * :   " or similar,
+    returns a tuple of
+    (<number of differences / stars>, <similarity>).
+    The similarity ratio is based on sample length, i.e. no changes are 100%,
+    1 difference against reference in a sample of 4 nucleotides = 75% similarity
     '''
-    # note - we could calculate this in get_differences_row() but it'd make
-    # the code ugly as we'd have to return differences along the rows
-    # at multiple places. We're not losing much speed in running over output
-    # rows one more time and calculating differences this way
-    diff_offsets = set()
-    for row in rows_list:
-        for i, char in enumerate(row, start=1):  # nearly everything is 1-indexed, use it here too
-            if char in DNA_ELEMENTS:  # also in variants, but we're likely to detect this in the next char
-               break  # not interested in this row, it does not contain differences
-            if char == DIFF_CHAR:
-                diff_offsets.add(i)
-    return len(diff_offsets)
+    changes = 0
+    for char in diffs_string:
+        if char == DIFF_CHAR:
+            changes += 1
+    try:
+        similarity = 100 * (len(diffs_string) - changes) / len(diffs_string)
+    except ZeroDivisionError:
+        similarity = 100.0
+
+    return changes, similarity
 
 def get_output_rows(list_of_strings,
                     width=80,

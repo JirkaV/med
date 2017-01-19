@@ -6,7 +6,7 @@ from .utils import (get_best_offset as gbo,
                     get_differences_row as gdr,
                     convert_samples_to_row as cstr,
                     prepare_output_rows as por,
-                    calculate_total_differences as ctd)
+                    calculate_statistics)
 from .views import sequencer_delete_sample
 from .forms import ReferenceInputForm, PlainDNASampleForm
 
@@ -258,17 +258,11 @@ def test_sample_longer_than_reference():
     f = PlainDNASampleForm({'dna_sample': 'AAAA'}, reference_length=3)
     assert not f.is_valid()
 
-def test_calculating_total_differences():
-    '''test calculating number of differences'''
-    assert ctd([]) == 0
-    assert ctd(['']) == 0
-    assert ctd(['', '']) == 0
-    assert ctd(['*']) == 1
-    assert ctd([':']) == 0  # variants are not differences
-    assert ctd(['* ', ' *']) == 2  # one at beginning, one at end
-    assert ctd(['* ', '* ']) == 1  # both differences are at the same offset
-    assert ctd(['AAAAAAA',
-                ' AGX AT',
-                '  *:  *',
-                '  XATGT',
-                '  : ***']) == 4
+def test_calculating_statistics():
+    '''test calculating similarity statistics'''
+    assert calculate_statistics('') == (0, 100.0)
+    assert calculate_statistics(' ') == (0, 100.0)
+    assert calculate_statistics('*') == (1, 0.0)
+    assert calculate_statistics('* ') == (1, 50.0)
+    assert calculate_statistics('*:') == (1, 50.0)
+    assert calculate_statistics('  **::  ') == (2, 75.0)

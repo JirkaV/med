@@ -14,10 +14,12 @@
   <div class="col-12">
 Samples aligned to reference DNA "{{ reference_name }}"
 
+{% if show_statistics %}
 Differences: {{ differences_cnt }}
 
 Similarity ratio: {{ similarity_ratio|floatformat:"-3" }}%
 
+{% endif %}
 {% for row in rows %}
 {{ row }}
 {% endfor %}

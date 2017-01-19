@@ -1,4 +1,3 @@
-from __future__ import division  # for compatibility with Python 2.7 and pypy
 from django.shortcuts import render
 from django.template.defaultfilters import date as template_date
 from django.utils.timezone import now
@@ -7,7 +6,7 @@ from .forms import (DNASampleForm, PlainDNASampleForm,
                     ReferenceSelectForm, ReferenceInputForm)
 from .utils import (get_best_offset, get_triplets,
                     prepare_output_rows, get_output_rows,
-                    calculate_total_differences)
+                    calculate_statistics)
 
 def match_dna_sample(request):
     if request.method == 'POST':
@@ -135,13 +134,21 @@ def sequencer_result_for_print(request):
 
     rows = prepare_output_rows(request.session['sequencer_reference'],
                                request.session['samples_data'])
-    differences_cnt = calculate_total_differences(rows)
+# FIXME    differences_cnt = calculate_total_differences(rows)
 
-    reference_len = len(request.session['sequencer_reference'])
-    try:
-        similarity_ratio = 100 * (reference_len - differences_cnt) / reference_len
-    except ZeroDivisionError:
-        similarity_ratio = 100
+    # per user request - calculate statistics only if there is exactly
+    # one sample, base it on the sample length only
+    if len(request.session['samples_data']) == 1:
+        show_statistics = True
+        sample = request.session['samples_data'][0]
+        s_offset = sample['offset']
+        s_length = len(sample['dna'])
+        # rows[2] is the one with SAME_CHAR, DIFF_CHAR etc.
+        differences_cnt, similarity_ratio = calculate_statistics(rows[2][s_offset:s_offset+s_length])
+    else:
+        differences_cnt = 0
+        similarity_ratio = 0.0
+        show_statistics = False
 
     final_output_rows = get_output_rows(rows,
                                         add_index_numbers=True,
@@ -152,6 +159,7 @@ def sequencer_result_for_print(request):
                             'rows': final_output_rows,
                             'differences_cnt': differences_cnt,
                             'similarity_ratio': similarity_ratio,
+                            'show_statistics': show_statistics,
                             'timestamp_string': template_date(now(), 'r')})
 
 def sequencer_delete_sample(request, sample_id):
