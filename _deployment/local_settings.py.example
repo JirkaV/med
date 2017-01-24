@@ -5,3 +5,5 @@ FORCE_SCRIPT_NAME = '/apps/med'
 STATIC_URL = '/static/med/'
 
 STATIC_ROOT = '/var/webapps/static/med'
+
+URL_ROOT = 'http://www.example.com/'  # for absolute redirects
