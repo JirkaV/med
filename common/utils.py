@@ -5,7 +5,7 @@
 # find a better solution
 #
 from django.shortcuts import redirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 
 def absolute_redirect(url, args=None):

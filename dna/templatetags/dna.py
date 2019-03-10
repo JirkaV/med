@@ -1,4 +1,5 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -15,7 +16,7 @@ def highlight_changes(ref, sample):
         else:
             r.append(rtmp)
             s.append(stmp)
-    return '%s -> %s' % (''.join(r), ''.join(s)) 
+    return mark_safe('%s -> %s' % (''.join(r), ''.join(s)))
 
 @register.filter
 def shorten(sample):
