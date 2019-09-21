@@ -20,6 +20,7 @@ from django.conf import settings
 urlpatterns = [
     url(r'^dna/', include('dna.urls')),
     url(r'^glukokortikoidy/', include('glukokortikoidy.urls')),
+    url(r'^prognoza/', include('prognoza.urls')),
 ]
 
 if settings.DEBUG:

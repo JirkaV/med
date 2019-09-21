@@ -1,0 +1,28 @@
+{% load widget_tweaks %}
+{% for error in form.non_field_errors %}
+  <p class="text-danger">{{ error }}</p>
+{% endfor %}
+
+{% for field in form %}
+  {% if not field.is_hidden %}
+    <div class="form-group row{% if field.errors %} has-danger{% endif %}">
+      <label for="{{ field.id_for_label }}" class="col-4 col-form-label{% if not field.field.required %} text-muted{% endif %}">{{ field.label }}</label>
+      <div class="col-8 controls">
+        <div class="input">
+          {% render_field field class+="form-control" %}
+          <span class="help-inline">
+            {% if field.errors %}
+              {% for error in field.errors %}
+                <div class="form-control-feedback">{{ error }}</div>
+              {% endfor %}
+            {% else %}
+              <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+            {% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    {{ field.as_hidden }}
+  {% endif %}
+{% endfor %}

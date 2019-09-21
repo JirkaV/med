@@ -1,0 +1,29 @@
+{% extends "common/base-bootstrap.html" %}
+
+{% load static %}
+
+{% block head %}
+  <script src="{% static 'js/jquery-3.1.1.min.js' %}" type="text/javascript" charset="utf-8"></script>
+  <script src="{% static 'js/tether.min.js' %}" type="text/javascript" charset="utf-8"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
+{% block title %}
+    Prognoza |
+{% endblock %}
+
+{% block header %}
+    {{ block.super }} > Prognoza
+{% endblock %}
+
+{% block navbar %}
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link">Prognoza</a>
+          </li>
+        </ul>
+{% endblock %}
+
+{% block content %}
+    {{ block.super }}
+{% endblock %}

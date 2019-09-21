@@ -1,0 +1,78 @@
+{% extends "prognoza/base.html" %}
+
+{% load static %}
+
+{% block title %}
+    {{ block.super }} Prognoza
+{% endblock %}
+
+{% block content %}
+
+  <div class="row">
+    <h2>Prognosis - Result</h2>
+  </div>
+  <p />
+
+  <div class="row">
+     <div class="col-6">
+       <div class="row">
+         <div class="col-4"><strong>GLY:</strong></div>
+         <div class="col-8">{{ data.gly }}</div>
+       </div>
+       <div class="row">
+         <div class="col-4"><strong>KREA:</strong></div>
+         <div class="col-8">{{ data.krea }}</div>
+       </div>
+       <div class="row">
+         <div class="col-4"><strong>TC:</strong></div>
+         <div class="col-8">{{ data.tc }}</div>
+       </div>
+       <div class="row">
+         <div class="col-4"><strong>LDL:</strong></div>
+         <div class="col-8">{{ data.ldl }}</div>
+       </div>
+       <div class="row">
+         <div class="col-4"><strong>LP:</strong></div>
+         <div class="col-8">{{ data.lp }}</div>
+       </div>
+       <div class="row">
+         <div class="col-4"><strong>VISKPL:</strong></div>
+         <div class="col-8">{{ data.viskpl }}</div>
+       </div>
+       <div class="row">
+         <div class="col-4"><strong>VISKKR:</strong></div>
+         <div class="col-8">{{ data.viskkr }}</div>
+       </div>
+     </div>
+     <div class="col-6">
+       <div class="row">
+         <div class="col-6"><strong>Linear Model:</strong></div>
+         <div class="col-6">
+           {% if result_linear %}
+             <span class="badge badge-success"><h4>SUCCESS</h4></label>
+           {% else %}
+             <span class="badge badge-danger"><h4>FAILURE</h4></label>
+           {% endif %}
+         </div>
+       </div>
+       <p />
+       <div class="row">
+         <div class="col-6"><strong>Quadratic Model:</strong></div>
+         <div class="col-6">
+           {% if result_quadratic %}
+             <span class="badge badge-success"><h4>SUCCESS</h4></label>
+           {% else %}
+             <span class="badge badge-danger"><h4>FAILURE</h4></label>
+           {% endif %}
+         </div>
+       </div>
+     </div>
+  </div>
+  </p>
+  <div class="row">
+     <div class="col-6">
+       <a href="." class="btn btn-primary">Start Over</a>
+     </div>
+  </div>
+
+{% endblock %}
