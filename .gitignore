@@ -5,3 +5,4 @@
 __pycache__
 /.cache
 /prognoza/stats.py
+/prognoza/verify.py
