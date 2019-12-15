@@ -1,0 +1,18 @@
+{% extends "alergie/base_alergie.html" %}
+
+{% block title %}
+    {{ block.super }} Slozeni
+{% endblock %}
+
+{% block content %}
+    <h2>Alergie</h2>
+
+    Vloz slozeni
+    <p />
+    
+    <form method="post">{% csrf_token %}
+      {% include "common/form_snippet.html" %}
+      <input type="submit" class="btn btn-large btn-primary" value="Hledej shody" />
+    </form>
+
+{% endblock %}

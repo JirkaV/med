@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'dna',
     'glukokortikoidy',
     'prognoza',
+    'alergie',
 )
 
 MIDDLEWARE_CLASSES = (

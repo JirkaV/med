@@ -6,3 +6,6 @@ __pycache__
 /.cache
 /prognoza/stats.py
 /prognoza/verify.py
+/alergie/alergie.json
+/alergie/alergie.txt
+/.pytest_cache

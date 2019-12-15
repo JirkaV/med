@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^dna/', include('dna.urls')),
     url(r'^glukokortikoidy/', include('glukokortikoidy.urls')),
     url(r'^prognoza/', include('prognoza.urls')),
+    url(r'^alergie/', include('alergie.urls')),
 ]
 
 if settings.DEBUG:

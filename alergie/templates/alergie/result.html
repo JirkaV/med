@@ -1,0 +1,34 @@
+{% extends "dna/base_dna.html" %}
+{% load dna %}
+
+{% block title %}
+    {{ block.super }} Alergie - vysledek
+{% endblock %}
+
+{% block content %}
+    <h3>Vysledek</h3>
+
+    <br />
+    <div class="card">
+      <div class="card-block">
+        <p class="card-text">
+        {% if matches %}
+          <ul>
+            {% for m in matches %}
+              <li>{{ m }}
+            {% endfor %}
+          </ul>
+        {% else %}
+          Zadne nalezene shody
+        {% endif %}
+        </p>
+      </div>
+    </div>
+
+    <br />
+
+   <div>
+       <a href="{% url 'check' %}" class="btn btn-warning">Znovu</a>
+   </div>
+
+{% endblock %}
